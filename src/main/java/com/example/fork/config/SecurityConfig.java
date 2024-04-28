@@ -1,11 +1,9 @@
 package com.example.fork.config;
 
-import com.softdev.folletto.endUserappapiserver.global.auth.AuthProvider;
-import com.softdev.folletto.endUserappapiserver.global.auth.JwtRequestFilter;
-import com.softdev.folletto.endUserappapiserver.global.auth.Role;
-import com.softdev.folletto.endUserappapiserver.global.data.repository.EndUserRepository;
-import com.softdev.folletto.endUserappapiserver.global.data.repository.TokenRepository;
-import com.softdev.folletto.endUserappapiserver.global.exception.CustomAuthenticationEntryPoint;
+import com.example.fork.global.auth.JwtRequestFilter;
+import com.example.fork.global.data.repository.TokenRepository;
+import com.example.fork.global.data.repository.UserRepository;
+import com.example.fork.global.exception.CustomAuthenticationEntryPoint;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -22,7 +20,7 @@ import org.springframework.web.filter.CorsFilter;
 @RequiredArgsConstructor
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private final EndUserRepository endUserRepository;
+    private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
 
     public static final String FRONT_URL = "http://localhost:3000";
@@ -48,6 +46,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .authenticationEntryPoint(new CustomAuthenticationEntryPoint());
 
         //(2)
-        http.addFilterBefore(new JwtRequestFilter(endUserRepository, tokenRepository), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(new JwtRequestFilter(userRepository, tokenRepository), UsernamePasswordAuthenticationFilter.class);
     }
 }

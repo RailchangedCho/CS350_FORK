@@ -6,8 +6,8 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.exceptions.TokenExpiredException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.softdev.folletto.endUserappapiserver.global.data.repository.EndUserRepository;
-import com.softdev.folletto.endUserappapiserver.global.data.repository.TokenRepository;
+import com.example.fork.global.data.repository.TokenRepository;
+import com.example.fork.global.data.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.http.auth.AUTH;
@@ -33,7 +33,7 @@ import java.util.Collections;
 @Log4j2
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-    private final EndUserRepository endUserRepository;
+    private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
 
     @Override
@@ -60,7 +60,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         }
         request.setAttribute("id", id);
 
-        AuthProvider authProvider = new AuthProvider(endUserRepository, tokenRepository);
+        AuthProvider authProvider = new AuthProvider(userRepository, tokenRepository);
         if (!authProvider.isTokenValid(token)) {
             throw new TokenExpiredException("비정상적인 접근입니다.", Instant.now());
         }

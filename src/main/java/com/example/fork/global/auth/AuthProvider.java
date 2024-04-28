@@ -1,10 +1,10 @@
 package com.example.fork.global.auth;
 
 import com.auth0.jwt.exceptions.JWTDecodeException;
-import com.softdev.folletto.endUserappapiserver.global.data.entity.EndUser;
-import com.softdev.folletto.endUserappapiserver.global.data.entity.Token;
-import com.softdev.folletto.endUserappapiserver.global.data.repository.EndUserRepository;
-import com.softdev.folletto.endUserappapiserver.global.data.repository.TokenRepository;
+import com.example.fork.global.data.entity.Token;
+import com.example.fork.global.data.entity.User;
+import com.example.fork.global.data.repository.TokenRepository;
+import com.example.fork.global.data.repository.UserRepository;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -19,13 +19,13 @@ import static org.apache.logging.log4j.ThreadContext.isEmpty;
 @Component
 public class AuthProvider {
 
-    private final EndUserRepository endUserRepository;
+    private final UserRepository userRepository;
     private final TokenRepository tokenRepository;
 
     @Autowired
-    public AuthProvider(EndUserRepository endUserRepository,
+    public AuthProvider(UserRepository userRepository,
                         TokenRepository tokenRepository) {
-        this.endUserRepository = endUserRepository;
+        this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
     }
 
@@ -54,7 +54,7 @@ public class AuthProvider {
         }
         /* check adminId existence */
         try {
-            if (endUserRepository.findById(endUserId).isEmpty()) {
+            if (userRepository.findById(endUserId).isEmpty()) {
                 throw new Exception("Unauthorized user");
             }
         } catch (Exception e) {
@@ -65,15 +65,15 @@ public class AuthProvider {
 
     public Integer getUserAuthType(String userId) {
 
-        if(endUserRepository.findById(userId).isEmpty()) {
+        if(userRepository.findById(userId).isEmpty()) {
             return -1;
         }
 
-        EndUser endUser = endUserRepository.findById(userId).get();
-        if (endUser.getRole() == Role.ENDUSER) {
+        User user = userRepository.findById(userId).get();
+        if (user.getRole() == Role.ENDUSER) {
             return 1;
         }
-        else if (endUser.getRole() == Role.FRANCHISE_ADMIN) {
+        else if (user.getRole() == Role.FRANCHISE_ADMIN) {
             return 0;
         }
         else {
@@ -82,12 +82,7 @@ public class AuthProvider {
     }
 
     public Boolean checkUserExist(String userId) {
-        Optional<EndUser> endUser = endUserRepository.findById(userId);
-        return endUser.isPresent();
-    }
-
-    public Boolean checkUserExistBySocialId(String socialId) {
-        Optional<EndUser> endUser = endUserRepository.findBySocialId(socialId);
+        Optional<User> endUser = userRepository.findById(userId);
         return endUser.isPresent();
     }
 
