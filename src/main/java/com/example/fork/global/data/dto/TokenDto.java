@@ -12,12 +12,12 @@ import lombok.*;
 public class TokenDto {
 
     String id;
-    Boolean is_valid;
+    Boolean isValid;
 
     public Token toEntity() {
         return Token.builder()
                 .id(id)
-                .is_valid(is_valid)
+                .isValid(isValid)
                 .build();
     }
 }

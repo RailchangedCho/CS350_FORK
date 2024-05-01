@@ -88,20 +88,20 @@ public class AuthProvider {
 
     public Boolean isTokenValid(String tokenId) {
         Optional<Token> token = tokenRepository.findById(tokenId);
-        return token.get().getIs_valid();
+        return token.get().getIsValid();
     }
 
     public void saveToken(String tokenId) {
         Token token = Token.builder().
                 id(tokenId)
-                .is_valid(true)
+                .isValid(true)
                 .build();
         tokenRepository.save(token);
     }
 
     public void expireToken(String tokenId) {
         Token token = tokenRepository.findById(tokenId).get();
-        token.setIs_valid(false);
+        token.setIsValid(false);
         tokenRepository.save(token);
     }
 }

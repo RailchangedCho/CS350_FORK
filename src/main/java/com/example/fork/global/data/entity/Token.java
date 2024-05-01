@@ -25,12 +25,12 @@ public class Token {
 
     @Getter
     @Column(name = "token_is_valid")
-    Boolean is_valid;
+    Boolean isValid;
 
     public TokenDto toDto() {
         return TokenDto.builder()
                 .id(id)
-                .is_valid(is_valid)
+                .isValid(isValid)
                 .build();
     }
 }

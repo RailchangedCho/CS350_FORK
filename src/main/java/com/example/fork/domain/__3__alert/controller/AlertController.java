@@ -1,4 +1,9 @@
 package com.example.fork.domain.__3__alert.controller;
 
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequestMapping("/api/v1/alert")
 public class AlertController {
 }
