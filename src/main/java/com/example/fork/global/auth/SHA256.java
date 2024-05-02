@@ -1,5 +1,7 @@
 package com.example.fork.global.auth;
 
+import org.springframework.stereotype.Component;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 

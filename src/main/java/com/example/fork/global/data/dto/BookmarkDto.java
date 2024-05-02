@@ -10,5 +10,7 @@ import lombok.*;
 @Setter
 public class BookmarkDto {
 
-    String id;
+    private String id;
+    private String userId;
+    private String facilityId;
 }

@@ -14,8 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-import static org.apache.logging.log4j.ThreadContext.isEmpty;
-
 @Component
 public class AuthProvider {
 
@@ -70,11 +68,14 @@ public class AuthProvider {
         }
 
         User user = userRepository.findById(userId).get();
-        if (user.getRole() == Role.ENDUSER) {
+        if (user.getType() == Type.KAIST) {
+            return 0;
+        }
+        else if (user.getType() == Type.FACILITY) {
             return 1;
         }
-        else if (user.getRole() == Role.FRANCHISE_ADMIN) {
-            return 0;
+        else if (user.getType() == Type.ADMIN) {
+            return 2;
         }
         else {
             return -1;

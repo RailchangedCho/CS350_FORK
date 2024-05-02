@@ -1,5 +1,6 @@
 package com.example.fork.global.data.dto;
 
+import com.example.fork.global.data.entity.Stamp;
 import lombok.*;
 
 @Data
@@ -10,5 +11,17 @@ import lombok.*;
 @Setter
 public class StampDto {
 
-    String id;
+    private String id;
+    private Integer num;
+    private String userId;
+    private String facilityId;
+
+    public Stamp toEntity() {
+        return Stamp.builder()
+                .id(id)
+                .num(num)
+                .userId(userId)
+                .facilityId(facilityId)
+                .build();
+    }
 }
