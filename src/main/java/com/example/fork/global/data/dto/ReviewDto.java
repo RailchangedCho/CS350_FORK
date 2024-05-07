@@ -11,18 +11,20 @@ import lombok.*;
 @Setter
 public class ReviewDto {
 
-    String id;
-    String text;
-    Integer score;
-    String userId;
-    String facilityId;
-    String imageId;
+    private String id;
+    private String text;
+    private Integer score;
+    private String hashtag;
+    private String userId;
+    private String facilityId;
+    private String imageId;
 
     public Review toEntity() {
         return Review.builder()
                 .id(id)
                 .text(text)
                 .score(score)
+                .hashtag(hashtag)
                 .userId(userId)
                 .facilityId(facilityId)
                 .imageId(imageId)

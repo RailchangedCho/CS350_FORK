@@ -34,6 +34,10 @@ public class User {
     Type type;
 
     @Getter
+    @Column(name = "user_is_authenticated")
+    Boolean isAuthenticated;
+
+    @Getter
     @Column(name = "user_permission")
     Permission permission;
 
@@ -47,6 +51,7 @@ public class User {
                 .password(password)
                 .email(email)
                 .type(type)
+                .isAuthenticated(isAuthenticated)
                 .permission(permission)
                 .attributes(attributes)
                 .build();

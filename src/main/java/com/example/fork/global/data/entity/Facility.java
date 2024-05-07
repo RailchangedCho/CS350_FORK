@@ -42,6 +42,18 @@ public class Facility {
     String descriptionEng;
 
     @Getter
+    @Column(name = "facility_latitude")
+    Float latitude;
+
+    @Getter
+    @Column(name = "facility_longitude")
+    Float longitude;
+
+    @Getter
+    @Column(name = "facility_address")
+    String address;
+
+    @Getter
     @Column(name = "facility_tag")
     String tag;
 
@@ -54,7 +66,7 @@ public class Facility {
     Integer maxStamp;
 
     @Getter
-    @Column(name = "fk_user_id")
+    @Column(name = "fk_users_id")
     String userId;
 
     public FacilityDto toDto() {
@@ -65,6 +77,9 @@ public class Facility {
                 .nameEng(nameEng)
                 .description(description)
                 .descriptionEng(descriptionEng)
+                .latitude(latitude)
+                .longitude(longitude)
+                .address(address)
                 .tag(tag)
                 .open(open)
                 .maxStamp(maxStamp)

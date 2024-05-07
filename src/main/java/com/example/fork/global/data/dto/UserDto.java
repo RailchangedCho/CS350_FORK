@@ -17,6 +17,7 @@ public class UserDto {
     private String password;
     private String email;
     private Type type;
+    private Boolean isAuthenticated;
     private Permission permission;
     private String attributes;
 
@@ -26,6 +27,7 @@ public class UserDto {
                 .password(password)
                 .email(email)
                 .type(type)
+                .isAuthenticated(isAuthenticated)
                 .permission(permission)
                 .attributes(attributes)
                 .build();

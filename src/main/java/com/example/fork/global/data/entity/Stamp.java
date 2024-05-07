@@ -26,17 +26,22 @@ public class Stamp {
     Integer num;
 
     @Getter
-    @Column(name = "fk_user_id")
+    @Column(name = "fk_images_id")
+    String imageId;
+
+    @Getter
+    @Column(name = "fk_users_id")
     String userId;
 
     @Getter
-    @Column(name = "fk_facility_id")
+    @Column(name = "fk_facilities_id")
     String facilityId;
 
     public StampDto toDto() {
         return StampDto.builder()
                 .id(id)
                 .num(num)
+                .imageId(imageId)
                 .userId(userId)
                 .facilityId(facilityId)
                 .build();

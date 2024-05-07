@@ -30,15 +30,19 @@ public class Review {
     Integer score;
 
     @Getter
-    @Column(name = "fk_user_id")
+    @Column(name = "review_hashtag")
+    String hashtag;
+
+    @Getter
+    @Column(name = "fk_users_id")
     String userId;
 
     @Getter
-    @Column(name = "fk_facility_id")
+    @Column(name = "fk_facilities_id")
     String facilityId;
 
     @Getter
-    @Column(name = "fk_image_id")
+    @Column(name = "fk_images_id")
     String imageId;
 
     public ReviewDto toDto() {
@@ -46,6 +50,7 @@ public class Review {
                 .id(id)
                 .text(text)
                 .score(score)
+                .hashtag(hashtag)
                 .userId(userId)
                 .facilityId(facilityId)
                 .imageId(imageId)

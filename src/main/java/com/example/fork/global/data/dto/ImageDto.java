@@ -13,12 +13,12 @@ import java.time.LocalDateTime;
 @Setter
 public class ImageDto {
 
-    String id;
-    String name;
-    Float fileByteSize;
-    String fileLocation;
-    LocalDateTime lastUsedDate;
-    LocalDateTime updateDate;
+    private String id;
+    private String name;
+    private Float fileByteSize;
+    private String fileLocation;
+    private LocalDateTime lastUsedDate;
+    private LocalDateTime updateDate;
 
     public Image toEntity() {
         return Image.builder()

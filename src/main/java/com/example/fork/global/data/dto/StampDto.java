@@ -13,6 +13,7 @@ public class StampDto {
 
     private String id;
     private Integer num;
+    private String imageId;
     private String userId;
     private String facilityId;
 
@@ -20,6 +21,7 @@ public class StampDto {
         return Stamp.builder()
                 .id(id)
                 .num(num)
+                .imageId(imageId)
                 .userId(userId)
                 .facilityId(facilityId)
                 .build();
