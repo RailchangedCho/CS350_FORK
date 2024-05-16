@@ -7,6 +7,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Entity
 @Setter
@@ -21,6 +22,10 @@ public class Bookmark {
     String id;
 
     @Getter
+    @Column(name = "bookmark_register_date")
+    LocalDateTime registerDate;
+
+    @Getter
     @Column(name = "fk_users_id")
     String userId;
 
@@ -31,6 +36,7 @@ public class Bookmark {
     public BookmarkDto toDto() {
         return BookmarkDto.builder()
                 .id(id)
+                .registerDate(registerDate)
                 .facilityId(facilityId)
                 .userId(userId)
                 .build();

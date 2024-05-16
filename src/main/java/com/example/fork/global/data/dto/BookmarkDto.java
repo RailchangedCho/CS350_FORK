@@ -4,6 +4,8 @@ import com.example.fork.global.data.entity.Bookmark;
 import com.example.fork.global.data.entity.Facility;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -13,12 +15,14 @@ import lombok.*;
 public class BookmarkDto {
 
     private String id;
+    private LocalDateTime registerDate;
     private String userId;
     private String facilityId;
 
     public Bookmark toEntity() {
         return Bookmark.builder()
                 .id(id)
+                .registerDate(registerDate)
                 .facilityId(facilityId)
                 .userId(userId)
                 .build();

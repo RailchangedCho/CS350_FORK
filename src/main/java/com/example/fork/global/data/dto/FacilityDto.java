@@ -3,6 +3,8 @@ package com.example.fork.global.data.dto;
 import com.example.fork.global.data.entity.Facility;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,6 +19,7 @@ public class FacilityDto {
     private String nameEng;
     private String description;
     private String descriptionEng;
+    private LocalDateTime registerDate;
     private Float latitude;
     private Float longitude;
     private String address;
@@ -24,6 +27,7 @@ public class FacilityDto {
     private Integer open;
     private Integer maxStamp;
     private String userId;
+    private String imageId;
 
     public Facility toEntity() {
         return Facility.builder()
@@ -33,6 +37,7 @@ public class FacilityDto {
                 .nameEng(nameEng)
                 .description(description)
                 .descriptionEng(descriptionEng)
+                .registerDate(registerDate)
                 .latitude(latitude)
                 .longitude(longitude)
                 .address(address)
@@ -40,6 +45,7 @@ public class FacilityDto {
                 .open(open)
                 .maxStamp(maxStamp)
                 .userId(userId)
+                .imageId(imageId)
                 .build();
     }
 }

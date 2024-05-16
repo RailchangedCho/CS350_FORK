@@ -3,6 +3,9 @@ package com.example.fork.global.data.dto;
 import com.example.fork.global.data.entity.Review;
 import lombok.*;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,7 +17,8 @@ public class ReviewDto {
     private String id;
     private String text;
     private Integer score;
-    private String hashtag;
+    private Integer hashtag;
+    private LocalDateTime registerDate;
     private String userId;
     private String facilityId;
     private String imageId;
@@ -25,6 +29,7 @@ public class ReviewDto {
                 .text(text)
                 .score(score)
                 .hashtag(hashtag)
+                .registerDate(registerDate)
                 .userId(userId)
                 .facilityId(facilityId)
                 .imageId(imageId)

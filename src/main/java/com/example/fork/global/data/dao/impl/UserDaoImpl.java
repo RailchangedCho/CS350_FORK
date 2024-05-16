@@ -41,6 +41,18 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
+    public UserDto getUserByEmail(String email) {
+        Optional<User> optEndUser = userRepository.findByEmail(email);
+        return optEndUser.map(User::toDto).orElse(null);
+    }
+
+    @Override
+    public UserDto getUserByName(String name) {
+        Optional<User> optEndUser = userRepository.findByName(name);
+        return optEndUser.map(User::toDto).orElse(null);
+    }
+
+    @Override
     public void addUser(UserDto userDto) {
         if(userRepository.findById(userDto.getId()).isEmpty()) {
             userRepository.save(userDto.toEntity());

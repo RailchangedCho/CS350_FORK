@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Entity
 @Setter
@@ -31,7 +32,11 @@ public class Review {
 
     @Getter
     @Column(name = "review_hashtag")
-    String hashtag;
+    Integer hashtag;
+
+    @Getter
+    @Column(name = "review_register_date")
+    LocalDateTime registerDate;
 
     @Getter
     @Column(name = "fk_users_id")
@@ -51,6 +56,7 @@ public class Review {
                 .text(text)
                 .score(score)
                 .hashtag(hashtag)
+                .registerDate(registerDate)
                 .userId(userId)
                 .facilityId(facilityId)
                 .imageId(imageId)

@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Entity
 @Setter
@@ -26,6 +27,10 @@ public class Stamp {
     Integer num;
 
     @Getter
+    @Column(name = "stamp_register_date")
+    LocalDateTime registerDate;
+
+    @Getter
     @Column(name = "fk_images_id")
     String imageId;
 
@@ -41,6 +46,7 @@ public class Stamp {
         return StampDto.builder()
                 .id(id)
                 .num(num)
+                .registerDate(registerDate)
                 .imageId(imageId)
                 .userId(userId)
                 .facilityId(facilityId)

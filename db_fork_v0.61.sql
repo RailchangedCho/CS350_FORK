@@ -1,9 +1,14 @@
-/* BASED ON DB.FORK_v0.51 */
+/* BASED ON DB.FORK_v0.61 */
 
 CREATE TABLE IF NOT EXISTS users (
     user_id varchar(255) PRIMARY KEY,
+    user_name varchar(255) NOT NULL UNIQUE,
     user_password varchar(255) NOT NULL,
     user_email varchar(255),
+    user_device_id varchar(255) UNIQUE,
+    user_status boolean NOT NULL,
+    user_default_language varchar(255) NOT NULL,
+    user_register_date date NOT NULL,
     user_type int4 NOT NULL,
     user_is_authenticated boolean NOT NULL,
     user_permission int4 NOT NULL,
@@ -17,17 +22,20 @@ CREATE TABLE IF NOT EXISTS facilities (
     facility_name_eng varchar(255) NOT NULL,
     facility_description text,
     facility_description_eng text,
+    facility_register_date date NOT NULL,
     facility_latitude float8,
     facility_longitude float8,
     facility_address varchar(255),
     facility_tag text,
     facility_open int4,
     facility_max_stamp int4 NOT NULL,
-    fk_users_id varchar(255) NOT NULL
+    fk_users_id varchar(255) NOT NULL,
+    fk_images_id varchar(255) UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS bookmarks (
     bookmark_id varchar(255) PRIMARY KEY,
+    bookmark_register_date date NOT NULL,
     fk_users_id varchar(255) NOT NULL,
     fk_facilities_id varchar(255)
 );
@@ -35,6 +43,7 @@ CREATE TABLE IF NOT EXISTS bookmarks (
 CREATE TABLE IF NOT EXISTS stamps (
     stamp_id varchar(255) PRIMARY KEY,
     stamp_num int4 NOT NULL,
+    stamp_register_date date NOT NULL,
     fk_images_id varchar(255),
     fk_users_id varchar(255) NOT NULL,
     fk_facilities_id varchar(255) NOT NULL
@@ -44,7 +53,8 @@ CREATE TABLE IF NOT EXISTS reviews (
     review_id varchar(255) PRIMARY KEY,
     review_text text NOT NULL,
     review_score int4 NOT NULL,
-    review_hashtag text,
+    review_hashtag int4,
+    review_register_date date NOT NULL,
     fk_users_id varchar(255) NOT NULL,
     fk_facilities_id varchar(255) NOT NULL,
     fk_images_id varchar(255) UNIQUE
@@ -68,6 +78,7 @@ CREATE TABLE IF NOT EXISTS reports (
     report_id varchar(255) PRIMARY KEY,
     report_text text NOT NULL,
     report_type int4 NOT NULL,
+    report_register_date date NOT NULL,
     fk_users_id varchar(255) NOT NULL,
     fk_reviews_id varchar(255) NOT NULL
 );
@@ -81,7 +92,8 @@ ALTER TABLE qnas ALTER qna_answer SET DEFAULT null;
 
 -- FK 제약조건 세팅
 ALTER TABLE facilities
-    ADD CONSTRAINT fk_users_id FOREIGN KEY (fk_users_id) REFERENCES "users"(user_id);
+    ADD CONSTRAINT fk_users_id FOREIGN KEY (fk_users_id) REFERENCES "users"(user_id),
+    ADD CONSTRAINT fk_images_id FOREIGN KEY (fk_images_id) REFERENCES "images"(image_id);
 
 ALTER TABLE bookmarks
     ADD CONSTRAINT fk_users_id FOREIGN KEY (fk_users_id) REFERENCES "users"(user_id),

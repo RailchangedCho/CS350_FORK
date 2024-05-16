@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Entity
 @Setter
@@ -42,6 +43,10 @@ public class Facility {
     String descriptionEng;
 
     @Getter
+    @Column(name = "facility_register_date")
+    LocalDateTime registerDate;
+
+    @Getter
     @Column(name = "facility_latitude")
     Float latitude;
 
@@ -69,6 +74,10 @@ public class Facility {
     @Column(name = "fk_users_id")
     String userId;
 
+    @Getter
+    @Column(name = "fk_images_id")
+    String imageId;
+
     public FacilityDto toDto() {
         return FacilityDto.builder()
                 .id(id)
@@ -77,6 +86,7 @@ public class Facility {
                 .nameEng(nameEng)
                 .description(description)
                 .descriptionEng(descriptionEng)
+                .registerDate(registerDate)
                 .latitude(latitude)
                 .longitude(longitude)
                 .address(address)
@@ -84,6 +94,7 @@ public class Facility {
                 .open(open)
                 .maxStamp(maxStamp)
                 .userId(userId)
+                .imageId(imageId)
                 .build();
     }
 }

@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Entity
 @Setter
@@ -30,6 +31,10 @@ public class Report {
     Integer type;
 
     @Getter
+    @Column(name = "report_register_date")
+    LocalDateTime registerDate;
+
+    @Getter
     @Column(name = "fk_users_id")
     String userId;
 
@@ -42,6 +47,7 @@ public class Report {
                 .id(id)
                 .text(text)
                 .type(type)
+                .registerDate(registerDate)
                 .userId(userId)
                 .reviewId(reviewId)
                 .build();

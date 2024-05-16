@@ -3,6 +3,8 @@ package com.example.fork.global.data.dto;
 import com.example.fork.global.data.entity.Report;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -14,6 +16,7 @@ public class ReportDto {
     private String id;
     private String text;
     private Integer type;
+    private LocalDateTime registerDate;
     private String userId;
     private String reviewId;
 
@@ -22,6 +25,7 @@ public class ReportDto {
                 .id(id)
                 .text(text)
                 .type(type)
+                .registerDate(registerDate)
                 .userId(userId)
                 .reviewId(reviewId)
                 .build();

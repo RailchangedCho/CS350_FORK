@@ -2,10 +2,9 @@ package com.example.fork.domain.__1__auth.controller;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
-import com.example.fork.global.auth.JwtProperties;
-import com.example.fork.global.auth.Permission;
-import com.example.fork.global.auth.SHA256;
-import com.example.fork.global.auth.Type;
+import com.example.fork.domain.__1__auth.service.AuthService;
+import com.example.fork.global.auth.*;
+import com.example.fork.global.data.dao.UserDao;
 import com.example.fork.global.data.dto.UserDto;
 import com.example.fork.global.function.SHA256Encryptor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +17,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
 import java.security.NoSuchAlgorithmException;
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,11 +27,18 @@ import java.util.UUID;
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
-/*
+    private final AuthService authService;
+    private final UserDao userDao;
+    private final AuthProvider authProvider;
+
     @Autowired
-    public AuthController() {
+    public AuthController(AuthProvider authProvider,
+                          AuthService authService,
+                          UserDao userDao) {
+        this.authProvider = authProvider;
+        this.authService = authService;
+        this.userDao = userDao;
     }
-*/
 
     private String createAdminJwtToken(UserDto userDto) {
 
@@ -92,9 +99,8 @@ public class AuthController {
     //@RolesAllowed({"ROLE_ADMIN", "ROLE_USER"})
     public ResponseEntity<Map<String, Object>> userRegisterKaist(@RequestBody Map<String, Object> requestBody) {
 
-        String email = requestBody.get("email").toString();
-        /*
-        if (!(endUserDao.getEndUserDetailByEmail(email) == null)) {
+        String email = requestBody.get("user_email").toString();
+        if (!(userDao.getUserByEmail(email) == null)) {
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("success", false);
             responseBody.put("error_code", 1);
@@ -102,18 +108,23 @@ public class AuthController {
 
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
         }
-        */
 
         UserDto userDto = UserDto.builder()
                 .id(UUID.randomUUID().toString())
-                .password(SHA256Encryptor.encrypt(requestBody.get("password").toString()))
-                .email(requestBody.get("email").toString())
+                .name(requestBody.get("user_name").toString())
+                .password(SHA256Encryptor.encrypt(requestBody.get("user_password").toString()))
+                .email(requestBody.get("user_email").toString())
+                .deviceId(null)
+                .status(true)
+                .defaultLanguage("KOR")
+                .registerDate(LocalDateTime.now())
                 .type(Type.KAIST)
-                .permission(Permission.NO_PERMISSION)
-                .attributes(requestBody.get("email").toString())
+                .isAuthenticated(false)
+                .permission(Permission.PERMISSION)
+                .attributes(null)
                 .build();
 
-        // endUserDao.addEndUser(endUserDto);
+        userDao.addUser(userDto);
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("success", true);
@@ -129,9 +140,8 @@ public class AuthController {
     //@RolesAllowed({"ROLE_ADMIN", "ROLE_USER"})
     public ResponseEntity<Map<String, Object>> userRegisterFacility(@RequestBody Map<String, Object> requestBody) {
 
-        String email = requestBody.get("email").toString();
-        /*
-        if (!(endUserDao.getEndUserDetailByEmail(email) == null)) {
+        String email = requestBody.get("user_email").toString();
+        if (!(userDao.getUserByEmail(email) == null)) {
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("success", false);
             responseBody.put("error_code", 1);
@@ -139,18 +149,23 @@ public class AuthController {
 
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
         }
-        */
 
         UserDto userDto = UserDto.builder()
                 .id(UUID.randomUUID().toString())
-                .password(SHA256Encryptor.encrypt(requestBody.get("password").toString()))
-                .email(requestBody.get("email").toString())
+                .name(requestBody.get("user_name").toString())
+                .password(SHA256Encryptor.encrypt(requestBody.get("user_password").toString()))
+                .email(requestBody.get("user_email").toString())
+                .deviceId(null)
+                .status(true)
+                .defaultLanguage("KOR")
+                .registerDate(LocalDateTime.now())
                 .type(Type.FACILITY)
-                .permission(Permission.NO_PERMISSION)
-                .attributes(requestBody.get("email").toString())
+                .isAuthenticated(false)
+                .permission(Permission.PERMISSION)
+                .attributes(null)
                 .build();
 
-        // endUserDao.addEndUser(endUserDto);
+        userDao.addUser(userDto);
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("success", true);
@@ -165,7 +180,7 @@ public class AuthController {
     @PostMapping("/email")
     public ResponseEntity<Map<String, Object>> sendCode(@RequestParam("email") @Valid @Email String email) {
 
-        // emailService.sendCodeToEmail(email);
+        authService.sendCodeToEmail(email);
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("success", true);
@@ -180,12 +195,13 @@ public class AuthController {
     public ResponseEntity<Map<String, Object>> verifyEmail(@RequestParam("email") @Valid @Email String email,
                                                            @RequestParam("code") String authCode) {
 
-        //Boolean response = emailService.verifiedCode(email, authCode);
+        Boolean response = authService.verifiedCode(email, authCode);
 
-        //if (response) {
-        //    EndUserDto endUserDto = endUserDao.getEndUserDetailByEmail(email);
-        //    endUserDto.setIs_authenticated(true);
-        //}
+        if (response) {
+            UserDto userDto = userDao.getUserByEmail(email);
+            userDto.setIsAuthenticated(true);
+            userDao.editUser(userDto);
+        }
 
         Map<String, Object> item = new HashMap<>();
         //item.put("Result", response);
@@ -222,10 +238,10 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<Map<String, Object>> userLogin(@RequestBody Map<String, Object> requestBody) {
 
-        String email = requestBody.get("email").toString();
-        String password = requestBody.get("password").toString();
+        String name = requestBody.get("user_name").toString();
+        String password = requestBody.get("user_password").toString();
 
-        if (email == null) {
+        if (name == null) {
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("success", false);
             responseBody.put("error_code", 1);
@@ -233,10 +249,10 @@ public class AuthController {
 
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
         }
-        /*
-        EndUserDto endUserDto = endUserDao.getEndUserDetailByEmail(email);
 
-        if (endUserDto == null) {
+        UserDto userDto = userDao.getUserByName(name);
+
+        if (userDto == null) {
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("success", false);
             responseBody.put("error_code", 1);
@@ -245,7 +261,7 @@ public class AuthController {
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
         }
 
-        if (!endUserDto.getIs_authenticated()) {
+        if (!userDto.getIsAuthenticated()) {
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("success", false);
             responseBody.put("error_code", 1);
@@ -254,7 +270,7 @@ public class AuthController {
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
         }
 
-        if (!Sha256Encryptor.encrypt(password).equals(endUserDto.getPassword())) {
+        if (!SHA256Encryptor.encrypt(password).equals(userDto.getPassword())) {
             Map<String, Object> responseBody = new HashMap<>();
             responseBody.put("success", false);
             responseBody.put("error_code", 1);
@@ -263,11 +279,11 @@ public class AuthController {
             return new ResponseEntity<>(responseBody, HttpStatus.OK);
         }
 
-        String userJwtToken = createUserJwtToken(endUserDto);
+        String userJwtToken = createUserJwtToken(userDto);
         authProvider.saveToken(userJwtToken);
-        */
+
         Map<String, Object> item = new HashMap<>();
-        //item.put("OAuthToken", userJwtToken);
+        item.put("OAuthToken", userJwtToken);
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("success", true);
         responseBody.put("error_code", 0);
@@ -280,6 +296,12 @@ public class AuthController {
     @ResponseBody
     @GetMapping("/signout")
     public ResponseEntity<Map<String, Object>> userSignOut(@RequestHeader Map<String, String> requestHeader) {
+
+        String JwtTokenString = requestHeader.get("authorization");
+        String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
+        String requestUserToken = authProvider.getUserInfoByAccessToken(JwtTokenString).get("token");
+
+        userDao.deleteUser(requestUserId);
 
         Map<String, Object> item = new HashMap<>();
         //item.put("OAuthToken", userJwtToken);
@@ -295,6 +317,12 @@ public class AuthController {
     @ResponseBody
     @GetMapping("/logout")
     public ResponseEntity<Map<String, Object>> userLogout(@RequestHeader Map<String, String> requestHeader) {
+
+        String JwtTokenString = requestHeader.get("authorization");
+        String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
+        String requestUserToken = authProvider.getUserInfoByAccessToken(JwtTokenString).get("token");
+
+        authProvider.expireToken(requestUserToken);
 
         Map<String, Object> item = new HashMap<>();
         //item.put("OAuthToken", userJwtToken);

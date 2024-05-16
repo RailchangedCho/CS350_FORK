@@ -8,6 +8,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import java.time.LocalDateTime;
 
 @Entity
 @Setter
@@ -22,12 +23,32 @@ public class User {
     String id;
 
     @Getter
+    @Column(name = "user_name")
+    String name;
+
+    @Getter
     @Column(name = "user_password")
     String password;
 
     @Getter
     @Column(name = "user_email")
     String email;
+
+    @Getter
+    @Column(name = "user_device_id")
+    String deviceId;
+
+    @Getter
+    @Column(name = "user_status")
+    Boolean status;
+
+    @Getter
+    @Column(name = "user_default_language")
+    String defaultLanguage;
+
+    @Getter
+    @Column(name = "user_register_date")
+    LocalDateTime registerDate;
 
     @Getter
     @Column(name = "user_type")
@@ -48,8 +69,13 @@ public class User {
     public UserDto toDto() {
         return UserDto.builder()
                 .id(id)
+                .name(name)
                 .password(password)
                 .email(email)
+                .deviceId(deviceId)
+                .status(status)
+                .defaultLanguage(defaultLanguage)
+                .registerDate(registerDate)
                 .type(type)
                 .isAuthenticated(isAuthenticated)
                 .permission(permission)
