@@ -1,5 +1,10 @@
 package com.example.fork.domain.__3__alert.controller;
 
+import com.example.fork.domain.__3__alert.service.AlertService;
+import com.example.fork.global.auth.AuthProvider;
+import com.example.fork.global.data.dao.UserDao;
+import com.example.fork.global.data.dto.UserDto;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,21 +17,31 @@ import java.util.Map;
 @RequestMapping("/api/v1/alert")
 public class AlertController {
 
+    private final AlertService alertService;
+    private final AuthProvider authProvider;
+    private final UserDao userDao;
+
+    @Autowired
+    public AlertController(AlertService alertService,
+                           AuthProvider authProvider,
+                           UserDao userDao) {
+        this.alertService = alertService;
+        this.authProvider = authProvider;
+        this.userDao = userDao;
+    }
+
     @ResponseBody
     @PostMapping("/device")
     public ResponseEntity<Map<String, Object>> saveDeviceId(@RequestHeader Map<String, String> requestHeader,
                                                             @RequestParam("code") String code) {
 
-        /*
         String JwtTokenString = requestHeader.get("authorization");
         String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
         Integer userAuthType = authProvider.getUserAuthType(requestUserId);
 
-        EndUserDto endUserDto = endUserDao.getEndUserDetail(requestUserId);
-        endUserDto.setDevice_id(code);
-        endUserDao.editEndUser(endUserDto);
-
-         */
+        UserDto userDto = userDao.getUser(requestUserId);
+        userDto.setDeviceId(code);
+        userDao.editUser(userDto);
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("success", true);
@@ -41,52 +56,19 @@ public class AlertController {
     public ResponseEntity<Map<String, Object>> sendAlert(@RequestHeader Map<String, String> requestHeader,
                                                          @RequestBody Map<String, Object> requestBody) {
 
-        /*
-        System.out.println(requestBody);
-        System.out.println(" *** 알림 수신 및 처리 완료 *** ");
+        String JwtTokenString = requestHeader.get("authorization");
+        String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
+        Integer userAuthType = authProvider.getUserAuthType(requestUserId);
 
-        // Case 1. 주문 상태 최신화
-        if (requestBody.get("type").toString().equals("orderStatus")) {
-
-            Map<String, Object> bodyMap = (Map<String, Object>) requestBody.get("body");
-
-            String orderId = bodyMap.get("orderId").toString();
-            OrderDto orderDto = orderDao.getOrderDetail(orderId);
-            String userId = orderDto.getEndUser();
-
-            if (bodyMap.get("status_code").equals(0)) {
-                orderDto.setStatus_code(OrderStatus.READY);
-            }
-
-            else if (bodyMap.get("status_code").equals(1)) {
-                orderDto.setStatus_code(OrderStatus.RUNNING);
-            }
-
-            else if (bodyMap.get("status_code").equals(2)) {
-                orderDto.setStatus_code(OrderStatus.DONE);
-                Map<String, Object> alertBody = new HashMap<>();
-                alertBody.put("orderId", orderId);
-                alertBody.put("content", "주문하신 음료의 제작이 완료되었습니다.");
-                Map<String, Object> alertContent = new HashMap<>();
-                alertContent.put("title", "주문 제작 완료");
-                alertContent.put("body", alertBody);
-
-                alertService.pushAlert(userId, alertContent);
-            }
-
-            else {
-                orderDto.setStatus_code(OrderStatus.CANCEL);
-            }
-
-            orderDao.editOrder(orderDto);
-        }
+        String targetUserId = requestBody.get("user_id").toString();
+        Map<String, Object> alertContent = (Map<String, Object>) requestBody.get("notification");
+        alertService.pushAlert(targetUserId, alertContent);
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("success", true);
         responseBody.put("error_code", 0);
         responseBody.put("error_text", "no error");
         //responseBody.put("item", null);
-        */
         return new ResponseEntity<>(null, HttpStatus.OK);
     }
 }

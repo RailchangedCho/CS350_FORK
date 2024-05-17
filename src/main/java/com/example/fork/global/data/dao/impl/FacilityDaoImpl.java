@@ -2,7 +2,9 @@ package com.example.fork.global.data.dao.impl;
 
 import com.example.fork.global.data.dao.FacilityDao;
 import com.example.fork.global.data.dto.FacilityDto;
+import com.example.fork.global.data.dto.UserDto;
 import com.example.fork.global.data.entity.Facility;
+import com.example.fork.global.data.entity.User;
 import com.example.fork.global.data.repository.FacilityRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,6 +36,12 @@ public class FacilityDaoImpl implements FacilityDao {
     @Override
     public FacilityDto getFacility(String facilityId) {
         Optional<Facility> optionalFacility = facilityRepository.findById(facilityId);
+        return optionalFacility.map(Facility::toDto).orElse(null);
+    }
+
+    @Override
+    public FacilityDto getFacilityByUserId(String userId) {
+        Optional<Facility> optionalFacility = facilityRepository.findByUserId(userId);
         return optionalFacility.map(Facility::toDto).orElse(null);
     }
 

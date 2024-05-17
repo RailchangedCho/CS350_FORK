@@ -31,13 +31,11 @@ public class FacilityController {
     public ResponseEntity<Map<String, Object>> addFacility(@RequestHeader Map<String, String> requestHeader,
                                                            @RequestBody Map<String, Object> requestBody) {
 
-
         String JwtTokenString = requestHeader.get("authorization");
         String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
         Integer userAuthType = authProvider.getUserAuthType(requestUserId);
 
         //권한체크 : 사업자
-
         facilityService.addFacility(requestUserId, requestBody);
 
         Map<String, Object> item = new HashMap<>();
