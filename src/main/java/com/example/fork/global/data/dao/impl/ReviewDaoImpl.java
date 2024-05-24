@@ -35,6 +35,16 @@ public class ReviewDaoImpl implements ReviewDao {
     }
 
     @Override
+    public List<ReviewDto> getReviewListByFacilityId(String facilityId) {
+        List<ReviewDto> reviewDtoList = new ArrayList<>();
+        List<Review> reviewList = reviewRepository.findAllByFacilityId(facilityId);
+        for (Review r : reviewList) {
+            reviewDtoList.add(r.toDto());
+        }
+        return reviewDtoList;
+    }
+
+    @Override
     public ReviewDto getReview(String reviewId) {
         Optional<Review> optionalReview = reviewRepository.findById(reviewId);
         return optionalReview.map(Review::toDto).orElse(null);

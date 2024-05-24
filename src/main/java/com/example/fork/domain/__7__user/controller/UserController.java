@@ -79,7 +79,7 @@ public class UserController {
 
     @ResponseBody
     @DeleteMapping("/{user_id}")
-    public ResponseEntity<Map<String, Object>> deleteStamp(@RequestHeader Map<String, String> requestHeader,
+    public ResponseEntity<Map<String, Object>> deleteUser(@RequestHeader Map<String, String> requestHeader,
                                                            @PathVariable String user_id) {
 
         Map<String, Object> item = new HashMap<>();

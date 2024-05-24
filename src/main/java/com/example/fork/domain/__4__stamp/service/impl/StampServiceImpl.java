@@ -38,7 +38,7 @@ public class StampServiceImpl implements StampService {
                 .num(0)
                 .registerDate(LocalDateTime.now())
                 .imageId(null)
-                .userId(requestUserId)
+                .userId(requestBody.get("user_name").toString())
                 .facilityId(targetFacilityId)
                 .build();
 
@@ -82,7 +82,7 @@ public class StampServiceImpl implements StampService {
 
         StampDto stampDto = stampDao.getStamp(stampId);
         stampDto.setNum(Integer.valueOf(requestBody.get("stamp_num").toString()));
-        stampDto.setImageId(requestBody.get("fk_images_id").toString());
+        //stampDto.setImageId(requestBody.get("fk_images_id").toString());
 
         stampDao.editStamp(stampDto);
     }

@@ -57,7 +57,7 @@ public class FacilityController {
                                                                @RequestParam(required = false, defaultValue = "0") Float longitude,
                                                                @RequestParam(required = false, defaultValue = "KOR") @Pattern(regexp = "^(KOR|ENG)$") String language) {
 
-        List<FacilityDto> facilityDtoList = facilityService.getFacilityList(field, sort);
+        List<FacilityDto> facilityDtoList = facilityService.getFacilityList(field, sort, latitude, longitude);
 
         Map<String, Object> item = new HashMap<>();
         item.put("FacilityList", facilityDtoList);

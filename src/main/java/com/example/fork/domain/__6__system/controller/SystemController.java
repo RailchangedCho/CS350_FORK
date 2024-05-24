@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.constraints.Pattern;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,13 +29,14 @@ public class SystemController {
 
     @ResponseBody
     @GetMapping("/language")
-    public ResponseEntity<Map<String, Object>> langExchange(@RequestHeader Map<String, String> requestHeader) {
+    public ResponseEntity<Map<String, Object>> langExchange(@RequestHeader Map<String, String> requestHeader,
+                                                            @RequestParam(required = true, defaultValue = "KOR") @Pattern(regexp = "^(KOR|ENG)$") String target) {
 
         String JwtTokenString = requestHeader.get("authorization");
         String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
         Integer userAuthType = authProvider.getUserAuthType(requestUserId);
 
-        systemService.langExchange(requestUserId, "targetLanguage");
+        systemService.langExchange(requestUserId, target);
 
         Map<String, Object> item = new HashMap<>();
         //item.put("OAuthToken", userJwtToken);

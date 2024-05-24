@@ -9,7 +9,7 @@ import java.util.Map;
 public interface ReviewService {
 
     void addReview(String requestUserId, Map<String, Object> requestBody);
-    List<ReviewDto> getReviewList(String field, String sort);
+    List<ReviewDto> getReviewList(String field, String sort, String facilityId);
     ReviewDto getReview(String reviewId);
     void editReview(String reviewId, Map<String, Object> requestBody);
     void deleteReview(String reviewId);

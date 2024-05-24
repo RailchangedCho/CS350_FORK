@@ -11,10 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,9 +42,15 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public List<ReviewDto> getReviewList(String field, String sort) {
+    public List<ReviewDto> getReviewList(String field, String sort, String facilityId) {
 
-        List<ReviewDto> responseList = reviewDao.getReviewList();
+        List<ReviewDto> responseList = new ArrayList<>();
+        if (facilityId.equals("None")) {
+            responseList = reviewDao.getReviewList();
+        }
+        else {
+            responseList = reviewDao.getReviewListByFacilityId(facilityId);
+        }
 
         if (sort.equals("asc")) {
             if (field.equals("date")) {
@@ -83,7 +86,7 @@ public class ReviewServiceImpl implements ReviewService {
         reviewDto.setText(requestBody.get("review_text").toString());
         reviewDto.setScore(Integer.valueOf(requestBody.get("review_score").toString()));
         reviewDto.setHashtag(Integer.valueOf(requestBody.get("review_hashtag").toString()));
-        reviewDto.setImageId((requestBody.get("facility_description_eng").toString()));
+        //reviewDto.setImageId((requestBody.get("facility_description_eng").toString()));
 
         reviewDao.editReview(reviewDto);
     }

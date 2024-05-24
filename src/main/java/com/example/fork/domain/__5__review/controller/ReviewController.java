@@ -53,15 +53,15 @@ public class ReviewController {
     @ResponseBody
     @GetMapping("")
     public ResponseEntity<Map<String, Object>> getReviewList(@RequestHeader Map<String, String> requestHeader,
-                                                             @RequestParam(required = false, defaultValue = "all") @Pattern(regexp = "^(all|image|hashtag)$") String field,
+                                                             @RequestParam(required = false, defaultValue = "date") @Pattern(regexp = "^(date|image|hashtag)$") String field,
                                                              @RequestParam(required = false, defaultValue = "asc") @Pattern(regexp = "^(asc|desc)$") String sort,
-                                                             @RequestParam(required = false, defaultValue = "all") String facility_id) {
+                                                             @RequestParam(required = true, defaultValue = "None") String facility_id) {
 
         String JwtTokenString = requestHeader.get("authorization");
         String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
         Integer userAuthType = authProvider.getUserAuthType(requestUserId);
 
-        List<ReviewDto> reviewDtoList = reviewService.getReviewList(field, sort);
+        List<ReviewDto> reviewDtoList = reviewService.getReviewList(field, sort, facility_id);
 
         Map<String, Object> item = new HashMap<>();
         item.put("ReviewList", reviewDtoList);

@@ -61,7 +61,7 @@ public class AuthController {
                 .withExpiresAt(new Date(System.currentTimeMillis() + JwtProperties.EXPIRATION_TIME))
                 .withClaim("id", userDto.getId())
                 .withClaim("email", userDto.getEmail())
-                .withClaim("type", userDto.getType().getValue())
+                .withClaim("role", userDto.getType().getValue())
                 .withClaim("token", "USER_TOKEN")
                 .sign(Algorithm.HMAC512(JwtProperties.SECRET));
 
@@ -101,12 +101,18 @@ public class AuthController {
 
         String email = requestBody.get("user_email").toString();
         if (!(userDao.getUserByEmail(email) == null)) {
-            Map<String, Object> responseBody = new HashMap<>();
-            responseBody.put("success", false);
-            responseBody.put("error_code", 1);
-            responseBody.put("error_text", "이미 가입된 이메일입니다.");
+            UserDto userDto = userDao.getUserByEmail(email);
+            if (!userDto.getIsAuthenticated()) {
+                userDao.deleteUser(userDto.getId());
+            }
+            else {
+                Map<String, Object> responseBody = new HashMap<>();
+                responseBody.put("success", false);
+                responseBody.put("error_code", 1);
+                responseBody.put("error_text", "이미 가입된 이메일입니다.");
 
-            return new ResponseEntity<>(responseBody, HttpStatus.OK);
+                return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            }
         }
 
         UserDto userDto = UserDto.builder()

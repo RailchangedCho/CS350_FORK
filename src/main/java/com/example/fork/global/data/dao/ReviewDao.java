@@ -8,6 +8,7 @@ import java.util.List;
 public interface ReviewDao {
 
     List<ReviewDto> getReviewList();
+    List<ReviewDto> getReviewListByFacilityId(String facilityId);
     ReviewDto getReview(String reviewId);
     void addReview(ReviewDto reviewDto);
     void editReview(ReviewDto reviewDto);
