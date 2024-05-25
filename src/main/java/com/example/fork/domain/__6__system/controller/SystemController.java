@@ -50,6 +50,29 @@ public class SystemController {
     }
 
     @ResponseBody
+    @GetMapping("/summary/{review_id}")
+    public ResponseEntity<Map<String, Object>> summaryReview(@RequestHeader Map<String, String> requestHeader,
+                                                             @PathVariable String review_id) {
+
+        String JwtTokenString = requestHeader.get("authorization");
+        String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
+        Integer userAuthType = authProvider.getUserAuthType(requestUserId);
+
+        String result = systemService.summaryReview(review_id);
+
+        Map<String, Object> item = new HashMap<>();
+        item.put("Summary", result);
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("success", true);
+        responseBody.put("error_code", 0);
+        responseBody.put("error_text", "no error");
+        responseBody.put("item", item);
+
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    }
+
+    /*
+    @ResponseBody
     @GetMapping("/translate/{review_id}")
     public ResponseEntity<Map<String, Object>> translateReview(@RequestHeader Map<String, String> requestHeader,
                                                                @PathVariable String review_id) {
@@ -64,7 +87,7 @@ public class SystemController {
 
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
-
+    */
     @ResponseBody
     @PostMapping("/report")
     public ResponseEntity<Map<String, Object>> bugReport(@RequestHeader Map<String, String> requestHeader,

@@ -7,10 +7,17 @@ import com.example.fork.global.data.dao.UserDao;
 import com.example.fork.global.data.dto.ReportDto;
 import com.example.fork.global.data.dto.UserDto;
 import com.example.fork.global.data.entity.Report;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -19,12 +26,15 @@ public class SystemServiceImpl implements SystemService {
 
     private final UserDao userDao;
     private final ReportDao reportDao;
+    private final ReviewDao reviewDao;
 
     @Autowired
     public SystemServiceImpl(UserDao userDao,
-                             ReportDao reportDao) {
+                             ReportDao reportDao,
+                             ReviewDao reviewDao) {
         this.userDao = userDao;
         this.reportDao = reportDao;
+        this.reviewDao = reviewDao;
     }
 
     @Override
@@ -33,6 +43,53 @@ public class SystemServiceImpl implements SystemService {
         UserDto userDto = userDao.getUser(requestUserId);
         userDto.setDefaultLanguage(targetLanguage);
         userDao.editUser(userDto);
+    }
+
+    @Override
+    public String summaryReview(String reviewId) {
+
+        String review = reviewDao.getReview(reviewId).getText();
+
+        Map<String, Object> document = new HashMap<>();
+        document.put("title", "title");
+        document.put("content", review);
+
+        Map<String, Object> option = new HashMap<>();
+        option.put("language", "ko");
+        option.put("model", "general");
+        option.put("tone", 0);
+        option.put("summaryCount", 1);
+
+        Map<String, Object> requestBody = new HashMap<>();
+        requestBody.put("document", document);
+        requestBody.put("option", option);
+
+        System.out.println(requestBody);
+
+        RestTemplate rt = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-NCP-APIGW-API-KEY-ID", "gnp968w593");
+        headers.add("X-NCP-APIGW-API-KEY", "iALIybfAM3oxEt61p50eqchWK2kgRYufrzZgm8bG");
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Map<String, Object>> naverSummaryRequest = new HttpEntity<>(requestBody, headers);
+
+        ResponseEntity<String> summaryResponse = rt.exchange(
+                "https://naveropenapi.apigw.ntruss.com/text-summary/v1/summarize",
+                HttpMethod.POST,
+                naverSummaryRequest,
+                String.class
+        );
+
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            resultMap = new ObjectMapper().readValue(summaryResponse.getBody(), Map.class);
+        } catch (JsonProcessingException e) {
+            e.getStackTrace();
+        }
+
+        return resultMap.get("summary").toString();
     }
 
     @Override

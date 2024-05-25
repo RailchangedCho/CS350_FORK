@@ -72,7 +72,7 @@ public class ImageController {
 
     @PostMapping("/{usage}/{usage_id}")
     public ResponseEntity<Map<String, Object>> handleFileUpload(@RequestParam("file") MultipartFile file,
-                                                                @PathVariable @Pattern(regexp = "(board|event|popup|paycard|coupon|faq|qna)") String usage,
+                                                                @PathVariable @Pattern(regexp = "(facility|stamp|review)") String usage,
                                                                 @PathVariable String usage_id) {
         Map<String, Object> responseBody = new HashMap<>();
 
