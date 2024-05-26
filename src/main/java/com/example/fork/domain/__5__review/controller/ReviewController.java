@@ -5,6 +5,7 @@ import com.example.fork.domain.__5__review.service.ReviewService;
 import com.example.fork.global.auth.AuthProvider;
 import com.example.fork.global.data.dto.FacilityDto;
 import com.example.fork.global.data.dto.ReviewDto;
+import com.example.fork.global.function.HashTagParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -53,7 +54,7 @@ public class ReviewController {
     @ResponseBody
     @GetMapping("")
     public ResponseEntity<Map<String, Object>> getReviewList(@RequestHeader Map<String, String> requestHeader,
-                                                             @RequestParam(required = false, defaultValue = "date") @Pattern(regexp = "^(date|image|hashtag)$") String field,
+                                                             @RequestParam(required = false, defaultValue = "date") @Pattern(regexp = "^(date|image)$") String field,
                                                              @RequestParam(required = false, defaultValue = "asc") @Pattern(regexp = "^(asc|desc)$") String sort,
                                                              @RequestParam(required = true, defaultValue = "None") String facility_id) {
 
@@ -85,8 +86,11 @@ public class ReviewController {
 
         ReviewDto reviewDto = reviewService.getReview(review_id);
 
+        List<String> hashTagList = HashTagParser.parseHashTag(reviewDto.getHashtag());
+
         Map<String, Object> item = new HashMap<>();
         item.put("Review", reviewDto);
+        item.put("Hashtags", hashTagList);
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("success", true);
         responseBody.put("error_code", 0);

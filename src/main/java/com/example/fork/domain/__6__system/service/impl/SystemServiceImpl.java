@@ -123,4 +123,49 @@ public class SystemServiceImpl implements SystemService {
             reportDao.addReport(reportDto);
         }
     }
+
+    @Override
+    public String translate(Map<String, Object> requestBody, String target) {
+
+        String content = requestBody.get("content").toString();
+
+        Map<String, Object> httpRequestBody = new HashMap<>();
+        if (target.equals("KOR")) {
+            httpRequestBody.put("source", "en");
+            httpRequestBody.put("target", "ko");
+        }
+        else {
+            httpRequestBody.put("source", "ko");
+            httpRequestBody.put("target", "en");
+        }
+        httpRequestBody.put("text", content);
+
+        RestTemplate rt = new RestTemplate();
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("X-NCP-APIGW-API-KEY-ID", "ywkuqewsba");
+        headers.add("X-NCP-APIGW-API-KEY", "7zTloozAUH0yqFk9rEHSzJAsit7pMFPpbcN2QL0E");
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        HttpEntity<Map<String, Object>> naverSummaryRequest = new HttpEntity<>(httpRequestBody, headers);
+
+        ResponseEntity<String> summaryResponse = rt.exchange(
+                "https://naveropenapi.apigw.ntruss.com/nmt/v1/translation",
+                HttpMethod.POST,
+                naverSummaryRequest,
+                String.class
+        );
+
+        Map<String, Object> resultMap = new HashMap<>();
+        try {
+            resultMap = new ObjectMapper().readValue(summaryResponse.getBody(), Map.class);
+        } catch (JsonProcessingException e) {
+            e.getStackTrace();
+        }
+
+        Map<String, Object> result = (Map<String, Object>) resultMap.get("message");
+        Map<String, Object> translatedText = (Map<String, Object>) result.get("result");
+
+        return translatedText.get("translatedText").toString();
+    }
 }

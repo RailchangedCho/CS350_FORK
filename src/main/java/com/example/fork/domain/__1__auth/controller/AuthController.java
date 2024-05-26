@@ -220,8 +220,10 @@ public class AuthController {
     }
 
     @ResponseBody
-    @GetMapping("/verify/business")
-    public ResponseEntity<Map<String, Object>> verifyBusinessCode(@RequestParam("code") String authCode) {
+    @GetMapping("/verify/business?name={name}&code={code}&start_date={start_date}")
+    public ResponseEntity<Map<String, Object>> verifyBusinessCode(@RequestParam("name") String name,
+                                                                  @RequestParam("code") String code,
+                                                                  @RequestParam("start_date") String start_date) {
 
         //Boolean response = emailService.verifiedCode(email, authCode);
 
@@ -229,6 +231,10 @@ public class AuthController {
         //    EndUserDto endUserDto = endUserDao.getEndUserDetailByEmail(email);
         //    endUserDto.setIs_authenticated(true);
         //}
+
+        UserDto userDto = userDao.getUserByName(name);
+        userDto.setIsAuthenticated(true);
+        userDao.editUser(userDto);
 
         Map<String, Object> item = new HashMap<>();
         //item.put("Result", response);

@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum Permission {
 
-    NO_PERMISSION ("PERMIT_PASS"),
-    PERMISSION ("PERMIT_DENY");
+    PERMISSION ("PERMIT_PASS"),
+    NO_PERMISSION ("PERMIT_DENY");
 
     private final String permits;
 

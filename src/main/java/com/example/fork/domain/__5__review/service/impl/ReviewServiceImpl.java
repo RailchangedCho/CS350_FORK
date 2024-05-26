@@ -52,6 +52,14 @@ public class ReviewServiceImpl implements ReviewService {
             responseList = reviewDao.getReviewListByFacilityId(facilityId);
         }
 
+        if (field.equals("image")) {
+            for (ReviewDto r : responseList) {
+                if (r.getImageId() == null) {
+                    responseList.remove(r);
+                }
+            }
+        }
+
         if (sort.equals("asc")) {
             if (field.equals("date")) {
                 return responseList

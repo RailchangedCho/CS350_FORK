@@ -71,23 +71,6 @@ public class SystemController {
         return new ResponseEntity<>(responseBody, HttpStatus.OK);
     }
 
-    /*
-    @ResponseBody
-    @GetMapping("/translate/{review_id}")
-    public ResponseEntity<Map<String, Object>> translateReview(@RequestHeader Map<String, String> requestHeader,
-                                                               @PathVariable String review_id) {
-
-        Map<String, Object> item = new HashMap<>();
-        //item.put("OAuthToken", userJwtToken);
-        Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("success", true);
-        responseBody.put("error_code", 0);
-        responseBody.put("error_text", "no error");
-        responseBody.put("item", item);
-
-        return new ResponseEntity<>(responseBody, HttpStatus.OK);
-    }
-    */
     @ResponseBody
     @PostMapping("/report")
     public ResponseEntity<Map<String, Object>> bugReport(@RequestHeader Map<String, String> requestHeader,
@@ -124,6 +107,29 @@ public class SystemController {
 
         Map<String, Object> item = new HashMap<>();
         //item.put("OAuthToken", userJwtToken);
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("success", true);
+        responseBody.put("error_code", 0);
+        responseBody.put("error_text", "no error");
+        responseBody.put("item", item);
+
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    }
+
+    @ResponseBody
+    @PostMapping("/translate")
+    public ResponseEntity<Map<String, Object>> translateReview(@RequestHeader Map<String, String> requestHeader,
+                                                               @RequestParam(required = true, defaultValue = "KOR") @Pattern(regexp = "^(KOR|ENG)$") String target,
+                                                               @RequestBody Map<String, Object> requestBody) {
+
+        String JwtTokenString = requestHeader.get("authorization");
+        String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
+        Integer userAuthType = authProvider.getUserAuthType(requestUserId);
+
+        String result = systemService.translate(requestBody, target);
+
+        Map<String, Object> item = new HashMap<>();
+        item.put("Translation", result);
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("success", true);
         responseBody.put("error_code", 0);
