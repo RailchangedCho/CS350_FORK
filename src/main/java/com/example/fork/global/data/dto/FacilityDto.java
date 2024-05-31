@@ -23,7 +23,7 @@ public class FacilityDto {
     private Float latitude;
     private Float longitude;
     private String address;
-    private String tag;
+    private Integer tag;
     private Integer open;
     private Integer maxStamp;
     private String userId;

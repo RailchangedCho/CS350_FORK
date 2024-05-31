@@ -40,7 +40,7 @@ public class UserServiceImpl implements UserService {
                 .type(Type.ADMIN)
                 .isAuthenticated(true)
                 .permission(Permission.PERMISSION)
-                .attributes(requestBody.get("user_attributes").toString())
+                .attributes(Integer.valueOf(requestBody.get("user_attributes").toString()))
                 .build();
 
         userDao.addUser(userDto);
@@ -86,6 +86,7 @@ public class UserServiceImpl implements UserService {
         userDto.setPassword(SHA256Encryptor.encrypt(requestBody.get("user_password").toString()));
         userDto.setDeviceId(requestBody.get("user_device_id").toString());
         userDto.setDefaultLanguage(requestBody.get("user_default_language").toString());
+        userDto.setAttributes(Integer.valueOf(requestBody.get("user_attributes").toString()));
         //reviewDto.setImageId((requestBody.get("facility_description_eng").toString()));
 
         userDao.editUser(userDto);

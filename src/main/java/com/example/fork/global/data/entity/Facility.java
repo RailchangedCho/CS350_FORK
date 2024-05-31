@@ -60,7 +60,7 @@ public class Facility {
 
     @Getter
     @Column(name = "facility_tag")
-    String tag;
+    Integer tag;
 
     @Getter
     @Column(name = "facility_open")

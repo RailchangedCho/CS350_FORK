@@ -27,7 +27,7 @@ public class UserDto {
     private Type type;
     private Boolean isAuthenticated;
     private Permission permission;
-    private String attributes;
+    private Integer attributes;
 
     public User toEntity() {
         return User.builder()

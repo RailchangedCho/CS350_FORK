@@ -68,6 +68,14 @@ public class AuthController {
         return userJwtToken;
     }
 
+    private Boolean nameDuplicateCheck(String name) {
+
+        if (!(userDao.getUserByName(name) == null)) {
+            return false; // error
+        }
+        return true;
+    }
+
 //    @GetMapping("/admin")
 //    @ApiOperation(value = "[임시] 관리자 토큰 발급", notes = "[임시] 관리자 토큰 발급")
 //    public String adminLogin() {
@@ -103,7 +111,18 @@ public class AuthController {
         if (!(userDao.getUserByEmail(email) == null)) {
             UserDto userDto = userDao.getUserByEmail(email);
             if (!userDto.getIsAuthenticated()) {
-                userDao.deleteUser(userDto.getId());
+                String name = requestBody.get("user_name").toString();
+                if (!nameDuplicateCheck(name)) {
+                    Map<String, Object> responseBody = new HashMap<>();
+                    responseBody.put("success", false);
+                    responseBody.put("error_code", 1);
+                    responseBody.put("error_text", "중복되는 id 입니다.");
+
+                    return new ResponseEntity<>(responseBody, HttpStatus.OK);
+                }
+                userDto.setName(name);
+                userDto.setPassword(SHA256Encryptor.encrypt(requestBody.get("user_password").toString()));
+                userDao.editUser(userDto);
             }
             else {
                 Map<String, Object> responseBody = new HashMap<>();
@@ -113,6 +132,16 @@ public class AuthController {
 
                 return new ResponseEntity<>(responseBody, HttpStatus.OK);
             }
+        }
+
+        String name = requestBody.get("user_name").toString();
+        if (!nameDuplicateCheck(name)) {
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("success", false);
+            responseBody.put("error_code", 1);
+            responseBody.put("error_text", "중복되는 id 입니다.");
+
+            return new ResponseEntity<>(responseBody, HttpStatus.OK);
         }
 
         UserDto userDto = UserDto.builder()

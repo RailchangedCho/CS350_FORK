@@ -1,4 +1,4 @@
-/* BASED ON DB.FORK_v0.61 */
+/* BASED ON DB.FORK_v0.7 */
 
 CREATE TABLE IF NOT EXISTS users (
     user_id varchar(255) PRIMARY KEY,
@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
     user_type int4 NOT NULL,
     user_is_authenticated boolean NOT NULL,
     user_permission int4 NOT NULL,
-    user_attributes text
+    user_attributes int4
 );
 
 CREATE TABLE IF NOT EXISTS facilities (
@@ -26,7 +26,7 @@ CREATE TABLE IF NOT EXISTS facilities (
     facility_latitude float8,
     facility_longitude float8,
     facility_address varchar(255),
-    facility_tag text,
+    facility_tag int4,
     facility_open int4,
     facility_max_stamp int4 NOT NULL,
     fk_users_id varchar(255) NOT NULL,

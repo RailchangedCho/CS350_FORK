@@ -103,7 +103,7 @@ public class FacilityServiceImpl implements FacilityService {
                 .latitude(Float.valueOf(requestBody.get("facility_latitude").toString()))
                 .longitude(Float.valueOf(requestBody.get("facility_longitude").toString()))
                 .address(requestBody.get("facility_address").toString())
-                .tag(requestBody.get("facility_tag").toString())
+                .tag(Integer.valueOf(requestBody.get("facility_tag").toString()))
                 .open(1)
                 .maxStamp(Integer.valueOf(requestBody.get("facility_max_stamp").toString()))
                 .userId(requestUserId)
@@ -162,7 +162,7 @@ public class FacilityServiceImpl implements FacilityService {
         facilityDto.setLatitude(Float.valueOf(requestBody.get("facility_latitude").toString()));
         facilityDto.setLongitude(Float.valueOf(requestBody.get("facility_longitude").toString()));
         facilityDto.setAddress(requestBody.get("facility_address").toString());
-        facilityDto.setTag(requestBody.get("facility_tag").toString());
+        facilityDto.setTag(Integer.valueOf(requestBody.get("facility_tag").toString()));
         facilityDto.setOpen(Integer.valueOf(requestBody.get("facility_open").toString()));
 
         facilityDao.editFacility(facilityDto);

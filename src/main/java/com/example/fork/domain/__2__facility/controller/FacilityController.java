@@ -3,12 +3,15 @@ package com.example.fork.domain.__2__facility.controller;
 import com.example.fork.domain.__2__facility.service.FacilityService;
 import com.example.fork.global.auth.AuthProvider;
 import com.example.fork.global.data.dto.FacilityDto;
+import com.example.fork.global.function.FacilityTagParser;
+import com.example.fork.global.function.HashTagParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Pattern;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,8 +80,14 @@ public class FacilityController {
 
         FacilityDto facilityDto = facilityService.getFacility(facility_id);
 
+        List<String> facilityTagList = new ArrayList<>();
+        if (facilityDto.getTag() != null) {
+            facilityTagList = FacilityTagParser.parseFacilityTag(facilityDto.getTag());
+        }
+
         Map<String, Object> item = new HashMap<>();
         item.put("Facility", facilityDto);
+        item.put("FacilityTags", facilityTagList);
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("success", true);
         responseBody.put("error_code", 0);

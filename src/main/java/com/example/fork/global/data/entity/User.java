@@ -64,7 +64,7 @@ public class User {
 
     @Getter
     @Column(name = "user_attributes")
-    String attributes;
+    Integer attributes;
 
     public UserDto toDto() {
         return UserDto.builder()
