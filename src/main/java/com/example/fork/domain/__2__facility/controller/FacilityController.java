@@ -3,6 +3,7 @@ package com.example.fork.domain.__2__facility.controller;
 import com.example.fork.domain.__2__facility.service.FacilityService;
 import com.example.fork.global.auth.AuthProvider;
 import com.example.fork.global.data.dto.FacilityDto;
+import com.example.fork.global.data.dto.etc.LeaderboardDto;
 import com.example.fork.global.function.FacilityTagParser;
 import com.example.fork.global.function.HashTagParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,10 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Pattern;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/v1/facility")
@@ -88,6 +87,7 @@ public class FacilityController {
         Map<String, Object> item = new HashMap<>();
         item.put("Facility", facilityDto);
         item.put("FacilityTags", facilityTagList);
+        item.put("AverageReviewScore", facilityService.getAverageReviewScore(facility_id));
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("success", true);
         responseBody.put("error_code", 0);
@@ -170,8 +170,30 @@ public class FacilityController {
     @DeleteMapping("/leaderboard")
     public ResponseEntity<Map<String, Object>> getLeaderBoard(@RequestHeader Map<String, String> requestHeader) {
 
+        List<FacilityDto> facilityDtoList = facilityService.getFacilityList("date", "asc", 0f, 0f);
+        List<LeaderboardDto> leaderboardDtoList = new ArrayList<>();
+        for (FacilityDto f : facilityDtoList) {
+            Double avg_score = facilityService.getAverageReviewScore(f.getId());
+            Integer reviewNum = facilityService.getTotalReviewNumber(f.getId());
+            leaderboardDtoList.add(f.toLeaderboardDto(avg_score, reviewNum));
+        }
+
+        List<LeaderboardDto> sorted = leaderboardDtoList
+                .stream()
+                .sorted(Comparator.comparing(LeaderboardDto::getAvg_score).reversed())
+                .collect(Collectors.toList());
+        List<LeaderboardDto> finalLeaderboard = new ArrayList<>();
+        for (LeaderboardDto l : sorted) {
+            if (l.getReviewNum() >= 3) {
+                finalLeaderboard.add(l);
+            }
+            if (finalLeaderboard.size() >=3) {
+                break;
+            }
+        }
+
         Map<String, Object> item = new HashMap<>();
-        //item.put("OAuthToken", userJwtToken);
+        item.put("Leaderboard", finalLeaderboard);
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("success", true);
         responseBody.put("error_code", 0);

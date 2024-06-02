@@ -2,7 +2,9 @@ package com.example.fork.domain.__2__facility.service.impl;
 
 import com.example.fork.domain.__2__facility.service.FacilityService;
 import com.example.fork.global.data.dao.FacilityDao;
+import com.example.fork.global.data.dao.ReviewDao;
 import com.example.fork.global.data.dto.FacilityDto;
+import com.example.fork.global.data.dto.ReviewDto;
 import com.example.fork.global.data.dto.etc.SortingDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,10 +19,13 @@ import static java.awt.geom.Point2D.distance;
 public class FacilityServiceImpl implements FacilityService {
 
     private final FacilityDao facilityDao;
+    private final ReviewDao reviewDao;
 
     @Autowired
-    public FacilityServiceImpl(FacilityDao facilityDao) {
+    public FacilityServiceImpl(FacilityDao facilityDao,
+                               ReviewDao reviewDao) {
         this.facilityDao = facilityDao;
+        this.reviewDao = reviewDao;
     }
 
     private List<FacilityDto> sortFacility(List<FacilityDto> facilityDtoList, String field, String sort, Float latitude, Float longitude) {
@@ -56,8 +61,6 @@ public class FacilityServiceImpl implements FacilityService {
 
         else {
             if (field.equals("distance")) {
-                // TODO : DISTANCE SORT
-                // TODO : DISTANCE SORT
                 List<SortingDto> sortingDtoList = new ArrayList<>();
                 for (FacilityDto f : facilityDtoList) {
                     double distance = distance((f.getLatitude()), f.getLongitude(), latitude, longitude);
@@ -171,5 +174,28 @@ public class FacilityServiceImpl implements FacilityService {
     @Override
     public void deleteFacility(String facilityId) {
         facilityDao.deleteFacility(facilityId);
+    }
+
+    @Override
+    public Double getAverageReviewScore(String facilityId) {
+
+        List<ReviewDto> responseList = reviewDao.getReviewListByFacilityId(facilityId);
+        List<Integer> reviewScore = new ArrayList<>();
+        for (ReviewDto r : responseList) {
+            reviewScore.add(r.getScore());
+        }
+
+        IntSummaryStatistics statistics = reviewScore
+                .stream()
+                .mapToInt(num -> num)
+                .summaryStatistics();
+
+        return statistics.getAverage();
+    }
+
+    @Override
+    public Integer getTotalReviewNumber(String facilityId) {
+        List<ReviewDto> responseList = reviewDao.getReviewListByFacilityId(facilityId);
+        return responseList.size();
     }
 }

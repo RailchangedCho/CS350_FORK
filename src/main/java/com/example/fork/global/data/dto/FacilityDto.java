@@ -1,5 +1,6 @@
 package com.example.fork.global.data.dto;
 
+import com.example.fork.global.data.dto.etc.LeaderboardDto;
 import com.example.fork.global.data.entity.Facility;
 import lombok.*;
 
@@ -46,6 +47,19 @@ public class FacilityDto {
                 .maxStamp(maxStamp)
                 .userId(userId)
                 .imageId(imageId)
+                .build();
+    }
+
+    public LeaderboardDto toLeaderboardDto(Double avg_score, Integer reviewNum) {
+        return LeaderboardDto.builder()
+                .name(name)
+                .nameEng(nameEng)
+                .description(description)
+                .descriptionEng(descriptionEng)
+                .address(address)
+                .avg_score(avg_score)
+                .imageId(imageId)
+                .reviewNum(reviewNum)
                 .build();
     }
 }

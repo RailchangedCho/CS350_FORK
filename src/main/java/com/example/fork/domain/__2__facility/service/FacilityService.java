@@ -12,4 +12,6 @@ public interface FacilityService {
     FacilityDto getFacility(String facilityId);
     void editFacility(String facilityId, Map<String, Object> requestBody);
     void deleteFacility(String facilityId);
+    Double getAverageReviewScore(String facilityId);
+    Integer getTotalReviewNumber(String facilityId);
 }
