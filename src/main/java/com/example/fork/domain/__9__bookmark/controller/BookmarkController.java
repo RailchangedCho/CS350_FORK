@@ -1,11 +1,10 @@
-package com.example.fork.domain.__7__user.controller;
+package com.example.fork.domain.__9__bookmark.controller;
 
-import com.example.fork.domain.__2__facility.service.FacilityService;
-import com.example.fork.domain.__7__user.service.UserService;
+import com.example.fork.domain.__5__review.service.ReviewService;
+import com.example.fork.domain.__9__bookmark.service.BookmarkService;
 import com.example.fork.global.auth.AuthProvider;
+import com.example.fork.global.data.dto.BookmarkDto;
 import com.example.fork.global.data.dto.ReviewDto;
-import com.example.fork.global.data.dto.UserDto;
-import com.example.fork.global.function.FacilityTagParser;
 import com.example.fork.global.function.HashTagParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -13,34 +12,33 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Pattern;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/user")
-public class UserController {
+@RequestMapping("/api/v1/bookmark")
+public class BookmarkController {
 
-    private final UserService userService;
+    private final BookmarkService bookmarkService;
     private final AuthProvider authProvider;
 
     @Autowired
-    public UserController(UserService userService, AuthProvider authProvider) {
-        this.userService = userService;
+    public BookmarkController(BookmarkService bookmarkService, AuthProvider authProvider) {
+        this.bookmarkService = bookmarkService;
         this.authProvider = authProvider;
     }
 
     @ResponseBody
     @PostMapping("")
-    public ResponseEntity<Map<String, Object>> addUser(@RequestHeader Map<String, String> requestHeader,
-                                                       @RequestBody Map<String, Object> requestBody) {
+    public ResponseEntity<Map<String, Object>> addBookmark(@RequestHeader Map<String, String> requestHeader,
+                                                           @RequestBody Map<String, Object> requestBody) {
 
         String JwtTokenString = requestHeader.get("authorization");
         String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
         Integer userAuthType = authProvider.getUserAuthType(requestUserId);
 
-        userService.addUser(requestUserId, requestBody);
+        bookmarkService.addBookmark(requestUserId, requestBody);
 
         Map<String, Object> item = new HashMap<>();
         //item.put("OAuthToken", userJwtToken);
@@ -55,17 +53,18 @@ public class UserController {
 
     @ResponseBody
     @GetMapping("")
-    public ResponseEntity<Map<String, Object>> getUserList(@RequestHeader Map<String, String> requestHeader,
-                                                           @RequestParam(required = false, defaultValue = "asc") @Pattern(regexp = "^(asc|desc)$") String sort) {
+    public ResponseEntity<Map<String, Object>> getBookmarkList(@RequestHeader Map<String, String> requestHeader,
+                                                               @RequestParam(required = false, defaultValue = "date") @Pattern(regexp = "^(date)$") String field,
+                                                               @RequestParam(required = false, defaultValue = "asc") @Pattern(regexp = "^(asc|desc)$") String sort) {
 
         String JwtTokenString = requestHeader.get("authorization");
         String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
         Integer userAuthType = authProvider.getUserAuthType(requestUserId);
 
-        List<UserDto> userDtoList = userService.getUserList("date", sort, requestUserId);
+        List<BookmarkDto> bookmarkDtoList = bookmarkService.getBookmarkList(field, sort, requestUserId);
 
         Map<String, Object> item = new HashMap<>();
-        item.put("UserList", userDtoList);
+        item.put("BookmarkList", bookmarkDtoList);
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("success", true);
         responseBody.put("error_code", 0);
@@ -76,23 +75,18 @@ public class UserController {
     }
 
     @ResponseBody
-    @GetMapping("/detail")
-    public ResponseEntity<Map<String, Object>> getUser(@RequestHeader Map<String, String> requestHeader) {
+    @GetMapping("/{bookmark_id}")
+    public ResponseEntity<Map<String, Object>> getBookmark(@RequestHeader Map<String, String> requestHeader,
+                                                           @PathVariable String bookmark_id) {
 
         String JwtTokenString = requestHeader.get("authorization");
         String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
         Integer userAuthType = authProvider.getUserAuthType(requestUserId);
 
-        UserDto userDto = userService.getUser(requestUserId);
-
-        List<String> facilityTagList = new ArrayList<>();
-        if (userDto.getAttributes() != null) {
-            facilityTagList = FacilityTagParser.parseFacilityTag(userDto.getAttributes());
-        }
+        BookmarkDto bookmarkDto = bookmarkService.getBookmark(bookmark_id);
 
         Map<String, Object> item = new HashMap<>();
-        item.put("User", userDto);
-        item.put("FacilityTags", facilityTagList);
+        item.put("Bookmark", bookmarkDto);
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("success", true);
         responseBody.put("error_code", 0);
@@ -103,38 +97,15 @@ public class UserController {
     }
 
     @ResponseBody
-    @PutMapping("/{user_id}")
-    public ResponseEntity<Map<String, Object>> editUser(@RequestHeader Map<String, String> requestHeader,
-                                                        @PathVariable String user_id,
-                                                        @RequestBody Map<String, Object> requestBody) {
+    @DeleteMapping("/{bookmark_id}")
+    public ResponseEntity<Map<String, Object>> deleteBookmark(@RequestHeader Map<String, String> requestHeader,
+                                                              @PathVariable String bookmark_id) {
 
         String JwtTokenString = requestHeader.get("authorization");
         String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
         Integer userAuthType = authProvider.getUserAuthType(requestUserId);
 
-        userService.editUser(user_id, requestBody);
-
-        Map<String, Object> item = new HashMap<>();
-        //item.put("OAuthToken", userJwtToken);
-        Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("success", true);
-        responseBody.put("error_code", 0);
-        responseBody.put("error_text", "no error");
-        responseBody.put("item", item);
-
-        return new ResponseEntity<>(responseBody, HttpStatus.OK);
-    }
-
-    @ResponseBody
-    @DeleteMapping("/{user_id}")
-    public ResponseEntity<Map<String, Object>> deleteUser(@RequestHeader Map<String, String> requestHeader,
-                                                           @PathVariable String user_id) {
-
-        String JwtTokenString = requestHeader.get("authorization");
-        String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
-        Integer userAuthType = authProvider.getUserAuthType(requestUserId);
-
-        userService.deleteUser(user_id);
+        bookmarkService.deleteBookmark(bookmark_id);
 
         Map<String, Object> item = new HashMap<>();
         //item.put("OAuthToken", userJwtToken);
