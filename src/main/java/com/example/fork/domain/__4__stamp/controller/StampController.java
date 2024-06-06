@@ -40,7 +40,7 @@ public class StampController {
         String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
         Integer userAuthType = authProvider.getUserAuthType(requestUserId);
 
-        if (stampService.stampAlreadyExist(requestUserId)) {
+        if (stampService.stampAlreadyExist(requestBody.get("user_name").toString())) {
             Map<String, Object> item = new HashMap<>();
             //item.put("OAuthToken", userJwtToken);
             Map<String, Object> responseBody = new HashMap<>();
@@ -82,12 +82,12 @@ public class StampController {
         }
 
         else if (userAuthType == 1) {
-            String facilityId = facilityService.getFacilityByUserId(requestUserId).getId();
-            if (facilityId == null) {
+            FacilityDto facilityDto = facilityService.getFacilityByUserId(requestUserId);
+            if (facilityDto == null) {
                 stampDtoList = null;
             }
             else {
-                stampDtoList = stampService.getStampListForFacility("date", sort, facilityId);
+                stampDtoList = stampService.getStampListForFacility("date", sort, facilityDto.getId());
             }
         }
 

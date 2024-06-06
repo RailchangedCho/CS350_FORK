@@ -94,15 +94,10 @@ public class SystemController {
 
     @ResponseBody
     @PostMapping("/report/{review_id}")
-    public ResponseEntity<Map<String, Object>> reviewReport(@RequestHeader Map<String, String> requestHeader,
-                                                            @PathVariable String review_id,
+    public ResponseEntity<Map<String, Object>> reviewReport(@PathVariable String review_id,
                                                             @RequestBody Map<String, Object> requestBody) {
 
-        String JwtTokenString = requestHeader.get("authorization");
-        String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
-        Integer userAuthType = authProvider.getUserAuthType(requestUserId);
-
-        systemService.addReport(1, requestUserId, review_id, requestBody);
+        systemService.addReport(1, null, review_id, requestBody);
 
         Map<String, Object> item = new HashMap<>();
         //item.put("OAuthToken", userJwtToken);
@@ -168,6 +163,28 @@ public class SystemController {
 
         Map<String, Object> item = new HashMap<>();
         item.put("Report", reportDto);
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("success", true);
+        responseBody.put("error_code", 0);
+        responseBody.put("error_text", "no error");
+        responseBody.put("item", item);
+
+        return new ResponseEntity<>(responseBody, HttpStatus.OK);
+    }
+
+    @ResponseBody
+    @DeleteMapping("/report/{report_id}")
+    public ResponseEntity<Map<String, Object>> deleteReport(@RequestHeader Map<String, String> requestHeader,
+                                                            @PathVariable String report_id) {
+
+        String JwtTokenString = requestHeader.get("authorization");
+        String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
+        Integer userAuthType = authProvider.getUserAuthType(requestUserId);
+
+        systemService.deleteReport(report_id);
+
+        Map<String, Object> item = new HashMap<>();
+        // item.put("Report", reportDto);
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("success", true);
         responseBody.put("error_code", 0);

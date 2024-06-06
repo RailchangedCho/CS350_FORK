@@ -116,6 +116,7 @@ public class SystemServiceImpl implements SystemService {
 
         // System
         if (type == 0) {
+            System.out.println("system report");
             ReportDto reportDto = ReportDto.builder()
                     .id(UUID.randomUUID().toString())
                     .text(requestBody.get("report_text").toString())
@@ -130,6 +131,7 @@ public class SystemServiceImpl implements SystemService {
 
         // Review
         else {
+            System.out.println("review report");
             ReportDto reportDto = ReportDto.builder()
                     .id(UUID.randomUUID().toString())
                     .text(requestBody.get("report_text").toString())
@@ -218,5 +220,10 @@ public class SystemServiceImpl implements SystemService {
     @Override
     public ReportDto getReport(String reportId) {
         return reportDao.getReport(reportId);
+    }
+
+    @Override
+    public void deleteReport(String reportId) {
+        reportDao.deleteReport(reportId);
     }
 }

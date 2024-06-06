@@ -9,6 +9,7 @@ public interface ReportDao {
 
     List<ReportDto> getReportList();
     ReportDto getReport(String reportId);
+    List<ReportDto> getReportListByReview(String reviewId);
     void addReport(ReportDto reportDto);
     void editReport(ReportDto reportDto);
     void deleteReport(String reportId);

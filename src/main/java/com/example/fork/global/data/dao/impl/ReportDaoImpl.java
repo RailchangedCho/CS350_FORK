@@ -35,6 +35,16 @@ public class ReportDaoImpl implements ReportDao {
     }
 
     @Override
+    public List<ReportDto> getReportListByReview(String reviewId) {
+        List<ReportDto> reportDtoList = new ArrayList<>();
+        List<Report> reportList = reportRepository.findAllByReviewId(reviewId);
+        for (Report r : reportList) {
+            reportDtoList.add(r.toDto());
+        }
+        return reportDtoList;
+    }
+
+    @Override
     public ReportDto getReport(String reportId) {
         Optional<Report> optionalReport = reportRepository.findById(reportId);
         return optionalReport.map(Report::toDto).orElse(null);

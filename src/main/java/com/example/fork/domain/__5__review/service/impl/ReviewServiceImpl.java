@@ -1,12 +1,16 @@
 package com.example.fork.domain.__5__review.service.impl;
 
 import com.example.fork.domain.__5__review.service.ReviewService;
+import com.example.fork.domain.__6__system.service.SystemService;
 import com.example.fork.global.data.dao.FacilityDao;
+import com.example.fork.global.data.dao.ReportDao;
 import com.example.fork.global.data.dao.ReviewDao;
 import com.example.fork.global.data.dao.StampDao;
 import com.example.fork.global.data.dto.FacilityDto;
+import com.example.fork.global.data.dto.ReportDto;
 import com.example.fork.global.data.dto.ReviewDto;
 import com.example.fork.global.data.dto.StampDto;
+import com.example.fork.global.data.entity.Report;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -18,10 +22,13 @@ import java.util.stream.Collectors;
 public class ReviewServiceImpl implements ReviewService {
 
     private final ReviewDao reviewDao;
+    private final ReportDao reportDao;
 
     @Autowired
-    public ReviewServiceImpl(ReviewDao reviewDao) {
+    public ReviewServiceImpl(ReviewDao reviewDao,
+                             ReportDao reportDao) {
         this.reviewDao = reviewDao;
+        this.reportDao = reportDao;
     }
 
     @Override
@@ -102,6 +109,10 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public void deleteReview(String reviewId) {
+        List<ReportDto> reportDtoList = reportDao.getReportListByReview(reviewId);
+        for (ReportDto r : reportDtoList) {
+            reportDao.deleteReport(r.getId());
+        }
         reviewDao.deleteReview(reviewId);
     }
 }

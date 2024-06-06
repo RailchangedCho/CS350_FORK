@@ -13,4 +13,5 @@ public interface SystemService {
     String translate(Map<String, Object> requestBody, String target);
     List<ReportDto> getReportList(String field, String sort);
     ReportDto getReport(String reportId);
+    void deleteReport(String reportId);
 }

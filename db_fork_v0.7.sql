@@ -79,8 +79,8 @@ CREATE TABLE IF NOT EXISTS reports (
     report_text text NOT NULL,
     report_type int4 NOT NULL,
     report_register_date date NOT NULL,
-    fk_users_id varchar(255) NOT NULL,
-    fk_reviews_id varchar(255) NOT NULL
+    fk_users_id varchar(255),
+    fk_reviews_id varchar(255)
 );
 
 -- 디폴트 값 세팅 예시

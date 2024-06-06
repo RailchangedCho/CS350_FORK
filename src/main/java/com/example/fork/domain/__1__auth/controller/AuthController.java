@@ -92,8 +92,6 @@ public class AuthController {
                 .attributes(null)
                 .build();
 
-        userDao.addUser(userDto);
-
         return createAdminJwtToken(userDto);
     }
 

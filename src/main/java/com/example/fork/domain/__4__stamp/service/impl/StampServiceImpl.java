@@ -172,11 +172,12 @@ public class StampServiceImpl implements StampService {
 
     @Override
     public Boolean stampAlreadyExist(String userId) {
-        if (stampDao.getStampListByUserId(userId) != null) {
-            return true;
+        String userUuid = findIdByName(userId);
+        if (stampDao.getStampListByUserId(userUuid).isEmpty()) {
+            return false;
         }
         else {
-             return false;
+             return true;
         }
     }
 }
