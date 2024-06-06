@@ -31,6 +31,9 @@ public class AlertServiceImpl implements AlertService {
         try {
             // TBD: get device token from database
             String deviceToken = userDao.getUser(userId).getDeviceId();
+            if (deviceToken == null) {
+                return false;
+            }
             Map<String, Object> pushAlertContents = new LinkedHashMap<>();
             pushAlertContents.put("to", deviceToken);
             Map<String, Object> notification = new HashMap<>();

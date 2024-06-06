@@ -93,7 +93,7 @@ public class FacilityServiceImpl implements FacilityService {
     }
 
     @Override
-    public void addFacility(String requestUserId, Map<String, Object> requestBody) {
+    public String addFacility(String requestUserId, Map<String, Object> requestBody) {
 
         FacilityDto facilityDto = FacilityDto.builder()
                 .id(UUID.randomUUID().toString())
@@ -114,12 +114,16 @@ public class FacilityServiceImpl implements FacilityService {
                 .build();
 
         facilityDao.addFacility(facilityDto);
+        return facilityDto.getId();
     }
 
     @Override
     public List<FacilityDto> getFacilityList(String field, String sort, Float latitude, Float longitude) {
 
-        List<FacilityDto> responseList = facilityDao.getFacilityList();
+        List<FacilityDto> responseList = new ArrayList<>();
+        if (field.equals("distance")) {
+            responseList = facilityDao.getFacilityList();
+        }
 
         if (sort.equals("asc")) {
             if (field.equals("date")) {
@@ -155,6 +159,11 @@ public class FacilityServiceImpl implements FacilityService {
     }
 
     @Override
+    public FacilityDto getFacilityByUserId(String userId) {
+        return facilityDao.getFacilityByUserId(userId);
+    }
+
+    @Override
     public void editFacility(String facilityId, Map<String, Object> requestBody) {
 
         FacilityDto facilityDto = facilityDao.getFacility(facilityId);
@@ -167,6 +176,15 @@ public class FacilityServiceImpl implements FacilityService {
         facilityDto.setAddress(requestBody.get("facility_address").toString());
         facilityDto.setTag(Integer.valueOf(requestBody.get("facility_tag").toString()));
         facilityDto.setOpen(Integer.valueOf(requestBody.get("facility_open").toString()));
+
+        facilityDao.editFacility(facilityDto);
+    }
+
+    @Override
+    public void editFacilityOwner(String facilityId, String userId) {
+
+        FacilityDto facilityDto = facilityDao.getFacility(facilityId);
+        facilityDto.setUserId(userId);
 
         facilityDao.editFacility(facilityDto);
     }

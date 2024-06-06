@@ -11,4 +11,5 @@ import java.util.List;
 public interface BookmarkRepository extends JpaRepository<Bookmark, String> {
 
     List<Bookmark> findAllByUserId(String userId);
+    List<Bookmark> findAllByFacilityId(String facilityId);
 }

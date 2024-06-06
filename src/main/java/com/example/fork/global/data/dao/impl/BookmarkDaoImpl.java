@@ -45,6 +45,16 @@ public class BookmarkDaoImpl implements BookmarkDao {
     }
 
     @Override
+    public List<BookmarkDto> getBookmarkListByFacilityId(String facilityId) {
+        List<BookmarkDto> bookmarkDtoList = new ArrayList<>();
+        List<Bookmark> bookmarkList = bookmarkRepository.findAllByFacilityId(facilityId);
+        for (Bookmark b : bookmarkList) {
+            bookmarkDtoList.add(b.toDto());
+        }
+        return bookmarkDtoList;
+    }
+
+    @Override
     public BookmarkDto getBookmark(String bookmarkId) {
         Optional<Bookmark> optionalBookmark = bookmarkRepository.findById(bookmarkId);
         return optionalBookmark.map(Bookmark::toDto).orElse(null);

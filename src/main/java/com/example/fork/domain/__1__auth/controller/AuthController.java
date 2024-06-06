@@ -18,10 +18,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.Pattern;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -76,31 +73,29 @@ public class AuthController {
         return true;
     }
 
-//    @GetMapping("/admin")
-//    @ApiOperation(value = "[임시] 관리자 토큰 발급", notes = "[임시] 관리자 토큰 발급")
-//    public String adminLogin() {
-//
-//        Random random = new Random();
-//        EndUserDto endUserDto = EndUserDto.builder()
-//                .id(UUID.randomUUID().toString())
-//                .name("admin" + random.nextInt())
-//                .email(null)
-//                .phone(null)
-//                .status_code(ActiveFlag.ACTIVE)
-//                .login_type(LoginType.ADMIN)
-//                .role(Role.FRANCHISE_ADMIN)
-//                .register_date(LocalDateTime.now())
-//                .position(null)
-//                .franchise(null)
-//                .nickname(null)
-//                .uuid(null)
-//                .payCard_amount(null)
-//                .build();
-//
-//        endUserDao.addEndUser(endUserDto);
-//
-//        return createAdminJwtToken(endUserDto);
-//    }
+    @GetMapping("/admin")
+    public String adminLogin() {
+
+        Random random = new Random();
+        UserDto userDto = UserDto.builder()
+                .id(UUID.randomUUID().toString())
+                .name("admin" + random.nextInt())
+                .password(SHA256Encryptor.encrypt("1234"))
+                .email("admin@gmail.com")
+                .deviceId(null)
+                .status(true)
+                .defaultLanguage("KOR")
+                .registerDate(LocalDateTime.now())
+                .type(Type.ADMIN)
+                .isAuthenticated(true)
+                .permission(Permission.PERMISSION)
+                .attributes(null)
+                .build();
+
+        userDao.addUser(userDto);
+
+        return createAdminJwtToken(userDto);
+    }
 
     @ResponseBody
     @PostMapping("/kaist")
@@ -249,17 +244,10 @@ public class AuthController {
     }
 
     @ResponseBody
-    @GetMapping("/verify/business?name={name}&code={code}&start_date={start_date}")
+    @GetMapping("/verify/business")
     public ResponseEntity<Map<String, Object>> verifyBusinessCode(@RequestParam("name") String name,
                                                                   @RequestParam("code") String code,
                                                                   @RequestParam("start_date") String start_date) {
-
-        //Boolean response = emailService.verifiedCode(email, authCode);
-
-        //if (response) {
-        //    EndUserDto endUserDto = endUserDao.getEndUserDetailByEmail(email);
-        //    endUserDto.setIs_authenticated(true);
-        //}
 
         UserDto userDto = userDao.getUserByName(name);
         userDto.setIsAuthenticated(true);
@@ -303,12 +291,24 @@ public class AuthController {
         }
 
         if (!userDto.getIsAuthenticated()) {
-            Map<String, Object> responseBody = new HashMap<>();
-            responseBody.put("success", false);
-            responseBody.put("error_code", 1);
-            responseBody.put("error_text", "이메일 인증을 먼저 진행해 주세요.");
 
-            return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            if (userDto.getType() == Type.KAIST) {
+                Map<String, Object> responseBody = new HashMap<>();
+                responseBody.put("success", false);
+                responseBody.put("error_code", 1);
+                responseBody.put("error_text", "이메일 인증을 먼저 진행해 주세요.");
+
+                return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            }
+
+            else {
+                Map<String, Object> responseBody = new HashMap<>();
+                responseBody.put("success", false);
+                responseBody.put("error_code", 1);
+                responseBody.put("error_text", "사업자 인증을 먼저 진행해 주세요.");
+
+                return new ResponseEntity<>(responseBody, HttpStatus.OK);
+            }
         }
 
         if (!SHA256Encryptor.encrypt(password).equals(userDto.getPassword())) {

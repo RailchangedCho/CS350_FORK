@@ -38,10 +38,10 @@ public class ReviewController {
         String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
         Integer userAuthType = authProvider.getUserAuthType(requestUserId);
 
-        reviewService.addReview(requestUserId, requestBody);
+        String reviewId = reviewService.addReview(requestUserId, requestBody);
 
         Map<String, Object> item = new HashMap<>();
-        //item.put("OAuthToken", userJwtToken);
+        item.put("reviewId", reviewId);
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("success", true);
         responseBody.put("error_code", 0);
@@ -53,14 +53,9 @@ public class ReviewController {
 
     @ResponseBody
     @GetMapping("")
-    public ResponseEntity<Map<String, Object>> getReviewList(@RequestHeader Map<String, String> requestHeader,
-                                                             @RequestParam(required = false, defaultValue = "date") @Pattern(regexp = "^(date|image)$") String field,
+    public ResponseEntity<Map<String, Object>> getReviewList(@RequestParam(required = false, defaultValue = "date") @Pattern(regexp = "^(date|image)$") String field,
                                                              @RequestParam(required = false, defaultValue = "asc") @Pattern(regexp = "^(asc|desc)$") String sort,
                                                              @RequestParam(required = true, defaultValue = "None") String facility_id) {
-
-        String JwtTokenString = requestHeader.get("authorization");
-        String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
-        Integer userAuthType = authProvider.getUserAuthType(requestUserId);
 
         List<ReviewDto> reviewDtoList = reviewService.getReviewList(field, sort, facility_id);
 
@@ -77,12 +72,7 @@ public class ReviewController {
 
     @ResponseBody
     @GetMapping("/{review_id}")
-    public ResponseEntity<Map<String, Object>> getReview(@RequestHeader Map<String, String> requestHeader,
-                                                         @PathVariable String review_id) {
-
-        String JwtTokenString = requestHeader.get("authorization");
-        String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
-        Integer userAuthType = authProvider.getUserAuthType(requestUserId);
+    public ResponseEntity<Map<String, Object>> getReview(@PathVariable String review_id) {
 
         ReviewDto reviewDto = reviewService.getReview(review_id);
 

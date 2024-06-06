@@ -62,7 +62,16 @@ public class AlertController {
 
         String targetUserId = requestBody.get("user_id").toString();
         Map<String, Object> alertContent = (Map<String, Object>) requestBody.get("notification");
-        alertService.pushAlert(targetUserId, alertContent);
+        Boolean successflag = alertService.pushAlert(targetUserId, alertContent);
+
+        if (!successflag) {
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("success", false);
+            responseBody.put("error_code", 0);
+            responseBody.put("error_text", "error occurs during alert sending.");
+            //responseBody.put("item", null);
+            return new ResponseEntity<>(null, HttpStatus.OK);
+        }
 
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("success", true);

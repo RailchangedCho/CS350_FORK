@@ -25,7 +25,7 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public void addReview(String requestUserId, Map<String, Object> requestBody) {
+    public String addReview(String requestUserId, Map<String, Object> requestBody) {
 
         ReviewDto reviewDto = ReviewDto.builder()
                 .id(UUID.randomUUID().toString())
@@ -39,6 +39,7 @@ public class ReviewServiceImpl implements ReviewService {
                 .build();
 
         reviewDao.addReview(reviewDto);
+        return reviewDto.getId();
     }
 
     @Override

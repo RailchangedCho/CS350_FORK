@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.Pattern;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,11 +22,13 @@ public class StampController {
 
     private final StampService stampService;
     private final AuthProvider authProvider;
+    private final FacilityService facilityService;
 
     @Autowired
-    public StampController(StampService stampService, AuthProvider authProvider) {
+    public StampController(StampService stampService, AuthProvider authProvider, FacilityService facilityService) {
         this.stampService = stampService;
         this.authProvider = authProvider;
+        this.facilityService = facilityService;
     }
 
     @ResponseBody
@@ -36,6 +39,18 @@ public class StampController {
         String JwtTokenString = requestHeader.get("authorization");
         String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
         Integer userAuthType = authProvider.getUserAuthType(requestUserId);
+
+        if (stampService.stampAlreadyExist(requestUserId)) {
+            Map<String, Object> item = new HashMap<>();
+            //item.put("OAuthToken", userJwtToken);
+            Map<String, Object> responseBody = new HashMap<>();
+            responseBody.put("success", false);
+            responseBody.put("error_code", 0);
+            responseBody.put("error_text", "stamp already exist");
+            responseBody.put("item", item);
+
+            return new ResponseEntity<>(responseBody, HttpStatus.OK);
+        }
 
         stampService.addStamp(requestUserId, requestBody);
 
@@ -60,7 +75,25 @@ public class StampController {
         String requestUserId = authProvider.getUserInfoByAccessToken(JwtTokenString).get("id");
         Integer userAuthType = authProvider.getUserAuthType(requestUserId);
 
-        List<StampDto> stampDtoList = stampService.getStampList("date", sort);
+        List<StampDto> stampDtoList = new ArrayList<>();
+
+        if (userAuthType == 0) {
+            stampDtoList = stampService.getStampListForUser("date", sort, requestUserId);
+        }
+
+        else if (userAuthType == 1) {
+            String facilityId = facilityService.getFacilityByUserId(requestUserId).getId();
+            if (facilityId == null) {
+                stampDtoList = null;
+            }
+            else {
+                stampDtoList = stampService.getStampListForFacility("date", sort, facilityId);
+            }
+        }
+
+        else {
+            stampDtoList = stampService.getStampList("date", sort);
+        }
 
         Map<String, Object> item = new HashMap<>();
         item.put("StampList", stampDtoList);

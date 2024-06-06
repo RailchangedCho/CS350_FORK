@@ -35,6 +35,26 @@ public class StampDaoImpl implements StampDao {
     }
 
     @Override
+    public List<StampDto> getStampListByUserId(String userId) {
+        List<StampDto> stampDtoList = new ArrayList<>();
+        List<Stamp> stampList = stampRepository.findAllByUserId(userId);
+        for (Stamp s : stampList) {
+            stampDtoList.add(s.toDto());
+        }
+        return stampDtoList;
+    }
+
+    @Override
+    public List<StampDto> getStampListByFacilityId(String facilityId) {
+        List<StampDto> stampDtoList = new ArrayList<>();
+        List<Stamp> stampList = stampRepository.findAllByFacilityId(facilityId);
+        for (Stamp s : stampList) {
+            stampDtoList.add(s.toDto());
+        }
+        return stampDtoList;
+    }
+
+    @Override
     public StampDto getStamp(String stampId) {
         Optional<Stamp> optionalStamp = stampRepository.findById(stampId);
         return optionalStamp.map(Stamp::toDto).orElse(null);

@@ -5,6 +5,8 @@ import com.example.fork.global.data.dao.ReportDao;
 import com.example.fork.global.data.dao.ReviewDao;
 import com.example.fork.global.data.dao.UserDao;
 import com.example.fork.global.data.dto.ReportDto;
+import com.example.fork.global.data.dto.ReviewDto;
+import com.example.fork.global.data.dto.StampDto;
 import com.example.fork.global.data.dto.UserDto;
 import com.example.fork.global.data.entity.Report;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -14,12 +16,12 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SystemServiceImpl implements SystemService {
@@ -46,13 +48,24 @@ public class SystemServiceImpl implements SystemService {
     }
 
     @Override
-    public String summaryReview(String reviewId) {
+    public String summaryReview(String facilityId) {
 
-        String review = reviewDao.getReview(reviewId).getText();
+        List<ReviewDto> reviewDtoList = reviewDao.getReviewListByFacilityId(facilityId);
+        String summaryText = "";
+        for (ReviewDto r : reviewDtoList) {
+            if (r.getText() != null) {
+                summaryText = summaryText + ", " + r.getText();
+            }
+        }
+
+        summaryText = summaryText + ".";
+        System.out.println(summaryText);
+
+        // String test = "그건 좀 아닌듯한데요, 나는 피자를 좋아합니다.";
 
         Map<String, Object> document = new HashMap<>();
         document.put("title", "title");
-        document.put("content", review);
+        document.put("content", summaryText);
 
         Map<String, Object> option = new HashMap<>();
         option.put("language", "ko");
@@ -75,12 +88,18 @@ public class SystemServiceImpl implements SystemService {
 
         HttpEntity<Map<String, Object>> naverSummaryRequest = new HttpEntity<>(requestBody, headers);
 
-        ResponseEntity<String> summaryResponse = rt.exchange(
-                "https://naveropenapi.apigw.ntruss.com/text-summary/v1/summarize",
-                HttpMethod.POST,
-                naverSummaryRequest,
-                String.class
-        );
+        ResponseEntity<String> summaryResponse;
+        try {
+            summaryResponse = rt.exchange(
+                    "https://naveropenapi.apigw.ntruss.com/text-summary/v1/summarize",
+                    HttpMethod.POST,
+                    naverSummaryRequest,
+                    String.class
+            );
+        }
+        catch (HttpClientErrorException e) {
+            return reviewDtoList.get(0).getText();
+        }
 
         Map<String, Object> resultMap = new HashMap<>();
         try {
@@ -167,5 +186,37 @@ public class SystemServiceImpl implements SystemService {
         Map<String, Object> translatedText = (Map<String, Object>) result.get("result");
 
         return translatedText.get("translatedText").toString();
+    }
+
+    @Override
+    public List<ReportDto> getReportList(String field, String sort) {
+
+        List<ReportDto> responseList = reportDao.getReportList();
+
+        if (sort.equals("asc")) {
+            if (field.equals("date")) {
+                return responseList
+                        .stream()
+                        .sorted(Comparator.comparing(ReportDto::getRegisterDate))
+                        .collect(Collectors.toList());
+            }
+        }
+
+        else {
+            if (field.equals("date")) {
+                return responseList
+                        .stream()
+                        .sorted(Comparator.comparing(ReportDto::getRegisterDate).reversed())
+                        .collect(Collectors.toList());
+            }
+        }
+
+        // TODO : EXCEPTION HANDLING
+        return null;
+    }
+
+    @Override
+    public ReportDto getReport(String reportId) {
+        return reportDao.getReport(reportId);
     }
 }

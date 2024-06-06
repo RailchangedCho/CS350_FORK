@@ -9,7 +9,9 @@ public interface BookmarkDao {
 
     List<BookmarkDto> getBookmarkList();
     List<BookmarkDto> getBookmarkListByUserId(String userId);
+    List<BookmarkDto> getBookmarkListByFacilityId(String facilityId);
     BookmarkDto getBookmark(String bookmarkId);
     void addBookmark(BookmarkDto bookmarkDto);
     void deleteBookmark(String bookmarkId);
+
 }

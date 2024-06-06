@@ -77,4 +77,31 @@ public class BookmarkServiceImpl implements BookmarkService {
     public void deleteBookmark(String bookmarkId) {
         bookmarkDao.deleteBookmark(bookmarkId);
     }
+
+    @Override
+    public List<BookmarkDto> getBookmarkListByFacilityId(String field, String sort, String facilityId) {
+
+        List<BookmarkDto> responseList = bookmarkDao.getBookmarkListByFacilityId(facilityId);
+
+        if (sort.equals("asc")) {
+            if (field.equals("date")) {
+                return responseList
+                        .stream()
+                        .sorted(Comparator.comparing(BookmarkDto::getRegisterDate))
+                        .collect(Collectors.toList());
+            }
+        }
+
+        else {
+            if (field.equals("date")) {
+                return responseList
+                        .stream()
+                        .sorted(Comparator.comparing(BookmarkDto::getRegisterDate).reversed())
+                        .collect(Collectors.toList());
+            }
+        }
+
+        // TODO : EXCEPTION HANDLING
+        return null;
+    }
 }
